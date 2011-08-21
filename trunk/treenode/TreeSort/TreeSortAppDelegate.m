@@ -215,6 +215,7 @@ NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
 {
     // Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained. Move this to
     // awakeFromNib in a viewController.
+    //Test
 	//NSDictionary *bindingInfo = [testOutlineView infoForBinding:NSContentBinding]; 
 	//NSTreeController *treeController = [bindingInfo valueForKey:NSObservedObjectKey];
 
