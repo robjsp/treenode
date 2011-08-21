@@ -20,12 +20,16 @@
 // where new comment collections are made and data needs to be copied from the old ones.
 - (NSDictionary *)dictionaryRepresentation;
 {
-	NSMutableDictionary	*dict = [NSMutableDictionary dictionaryWithCapacity:3];
+	NSMutableDictionary	*dict = [NSMutableDictionary dictionaryWithCapacity:6];
 	
 	// and the inherited treeNode properties...but not children, parent or sortIndex as these will get updated on insert
     [dict setValue:[self valueForKey:@"isLeaf"] forKey:@"isLeaf"];
     [dict setValue:[self valueForKey:@"displayName"] forKey:@"displayName"];
     [dict setValue:[self valueForKey:@"isSelectable"] forKey:@"isSelectable"];
+    [dict setValue:[self valueForKey:@"sortIndex"] forKey:@"sortIndex"];
+    
+    // To allow for archiving of parent so that a tree can be reconstructed.
+	[dict setValue:[[[self valueForKey:@"parent"] objectID] URIRepresentation] forKey:@"parentURI"];
 	
     return dict; 
 }
@@ -37,7 +41,7 @@
 	// and the inherited treeNode properties...but not children, parent or sortIndex as these will get updated on insert
     [self setValue:[dict valueForKey:@"isLeaf"] forKey:@"isLeaf"];
     [self setValue:[dict valueForKey:@"displayName"] forKey:@"displayName"];
-    [self setValue:[dict valueForKey:@"isSelectable"] forKey:@"isSelectable"];	
+    [self setValue:[dict valueForKey:@"isSelectable"] forKey:@"isSelectable"];
 }
 
 @end

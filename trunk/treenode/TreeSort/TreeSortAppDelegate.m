@@ -16,6 +16,7 @@
 #import "NSIndexPath_Extensions.h"
 
 NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
+NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 
 @implementation TreeSortAppDelegate
 
@@ -234,15 +235,11 @@ NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
             if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
                 [copiedProperties addObject:[treeObject dictionaryRepresentation]];
         }
-        
-//        NSLog(@"Copied dictionary array is: %@", copiedProperties);
-		
-		//NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copyObjectsArray]; 
-		
-		//return copyData;
+                		
+		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
+        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
+        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
 	}
-
-    //[pasteBoard setData:[NSKeyedArchiver archivedDataWithRootObject:items] forType:ESNodeIndexPathPasteBoardType];
 }
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
