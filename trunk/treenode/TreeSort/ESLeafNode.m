@@ -28,8 +28,9 @@
     [dict setValue:[self valueForKey:@"isSelectable"] forKey:@"isSelectable"];
     [dict setValue:[self valueForKey:@"sortIndex"] forKey:@"sortIndex"];
     
-    // To allow for archiving of parent so that a tree can be reconstructed.
+    // To allow for archiving of self and parent so that a tree can be reconstructed.
 	[dict setValue:[[[self valueForKey:@"parent"] objectID] URIRepresentation] forKey:@"parentURI"];
+    [dict setValue:[[self objectID] URIRepresentation] forKey:@"selfURI"];
 	
     return dict; 
 }
@@ -38,7 +39,7 @@
 // a dictionary, here id is used to stop later compiler errors
 - (void)setValuesFromDictionaryRepresentation:(NSDictionary *)dict
 {
-	// and the inherited treeNode properties...but not children, parent or sortIndex as these will get updated on insert
+	// and the inherited treeNode properties...but not, self, parent or sortIndex as these will get updated on insert
     [self setValue:[dict valueForKey:@"isLeaf"] forKey:@"isLeaf"];
     [self setValue:[dict valueForKey:@"displayName"] forKey:@"displayName"];
     [self setValue:[dict valueForKey:@"isSelectable"] forKey:@"isSelectable"];

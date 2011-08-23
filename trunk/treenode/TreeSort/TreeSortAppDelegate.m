@@ -235,25 +235,31 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
             if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
                 [copiedProperties addObject:[treeObject dictionaryRepresentation]];
         }
-                		
+        
 		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
         [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
         [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
+        
+//        NSArray *copied = [NSKeyedUnarchiver unarchiveObjectWithData:copyData];
+//        NSLog(@"copied = %@", copied);
+
 	}
 }
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
-{
-    NSTreeNode *aNode;
-    
-    if([[treeController selectedNodes] count] > 0) {
-		aNode = [[treeController selectedNodes] lastObject];			
-		 // Paste at end of selection	
-	} else {
-		// Nothing selected so paste at end of all rows
-		aNode = [[[treeController arrangedObjects] childNodes] lastObject];
-		
-	}
+{    
+    NSArray *types = [pasteBoard types];
+    if([types containsObject:ESObjectURIPasteBoardType]) {
+        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
+        
+        // The data is archived up as a series of NSDictionaries when copy or drag occurs
+        NSArray *copiedProperties;
+        if(data) {
+            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
+            NSArray *insertionindexPaths = [treeController insertionIndexPathsFor:(NSArray *)copiedProperties atStartingIndexPath:initialIndexPath];
+        }
+    }    
     return NO;
 }
 
