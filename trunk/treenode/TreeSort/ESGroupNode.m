@@ -32,8 +32,9 @@
     [dict setValue:[self valueForKey:@"isExpanded"] forKey:@"isExpanded"];
     [dict setValue:[self valueForKey:@"isSpecialGroup"] forKey:@"isSpecialGroup"];
     
-    // To allow for archiving of parent and children Object ID's so that a tree can be reconstructed.
+    // To allow for archiving of self, parent and children Object ID's so that a tree can be reconstructed.
 	[dict setValue:[[[self valueForKey:@"parent"] objectID] URIRepresentation] forKey:@"parentURI"];
+    [dict setValue:[[self objectID] URIRepresentation] forKey:@"selfURI"];
     
     NSSet *children = [self valueForKeyPath:@"children"];
     NSMutableArray *childrenURIs = [NSMutableArray array];
@@ -60,7 +61,7 @@
     [self setValue:[dict valueForKey:@"isExpanded"] forKey:@"isExpanded"];
     [self setValue:[dict valueForKey:@"isSpecialGroup"] forKey:@"isSpecialGroup"];
     
-    // and the inherited treeNode properties...but not children, parent or sortIndex as these will get updated on insert
+    // and the inherited treeNode properties...but not children, parent, self or sortIndex as these will get updated on insert
     [self setValue:[dict valueForKey:@"isLeaf"] forKey:@"isLeaf"];
     [self setValue:[dict valueForKey:@"displayName"] forKey:@"displayName"];
     [self setValue:[dict valueForKey:@"isSelectable"] forKey:@"isSelectable"];

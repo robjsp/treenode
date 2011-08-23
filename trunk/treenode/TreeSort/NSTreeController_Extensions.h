@@ -20,9 +20,9 @@
 - (NSTreeNode *)nextSiblingOfNodeAtIndexPath:(NSIndexPath *)indexPath;
 - (NSTreeNode *)nodeAtIndexPath:(NSIndexPath *)indexPath;
 - (NSIndexPath *)indexPathForInsertion;
+- (NSArray *)insertionIndexPathsFor:(NSArray *)copiedProperties atStartingIndexPath:initialIndexPath;
 - (NSIndexPath *)indexPathToObject:(id)object;
 - (NSTreeNode *)treeNodeForObject:(id)object;
-- (NSArray *)shiftedIndexPathsOfNodes:(NSArray *)treeNodes;
 
 // Conversion of tree to array for easy lookup
 - (NSArray *)flattenedContent;

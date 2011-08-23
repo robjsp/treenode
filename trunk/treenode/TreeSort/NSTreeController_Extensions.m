@@ -60,6 +60,13 @@
 	return indexPath;
 }
 
+// Takes an array of model property dictionaries. The parent, self and child references are packaged up as URI's
+- (NSArray *)insertionIndexPathsFor:(NSArray *)copiedProperties atStartingIndexPath:initialIndexPath;
+{
+    NSMutableArray *temp = [NSMutableArray array];
+    return temp;
+}
+
 
 - (NSIndexPath *)indexPathToObject:(id)object;
 {
@@ -77,13 +84,6 @@
 		}
 	}
 	return treeNode;
-}
-
-// Returns an array of indexPaths of passed nodes as if consecutively arranged at top of tree.
-// This allows easier adjustment of a pasted set of node indexPaths to maintain node relationships
-- (NSArray *)shiftedIndexPathsOfNodes:(NSArray *)treeNodes
-{
-    return nil;
 }
 
 
