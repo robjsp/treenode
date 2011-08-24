@@ -257,7 +257,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
         if(data) {
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
-            NSArray *insertionindexPaths = [treeController insertionIndexPathsFor:(NSArray *)copiedProperties atStartingIndexPath:initialIndexPath];
+            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
         }
     }    
     return NO;
