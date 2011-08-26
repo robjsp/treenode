@@ -224,7 +224,9 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     
     // The selected nodes are flattened and the selected managed objects found. The properties of each node are
     // then read into a dictionary which is inserted into an array.
+    
     NSArray *selectedObjects = [treeController flattenedSelectedObjects];
+        
     NSUInteger count = [selectedObjects count];
     
     if (count) {
@@ -239,11 +241,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
         [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
         [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
-        
-//        NSArray *copied = [NSKeyedUnarchiver unarchiveObjectWithData:copyData];
-//        NSLog(@"copied = %@", copied);
-
-	}
+    }
 }
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
@@ -258,6 +256,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
             NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
+            NSLog(@"insertionindexPaths are %@", insertionindexPaths);
         }
     }    
     return NO;
@@ -334,6 +333,14 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     }
 
     return NSTerminateNow;
+}
+
+- (void)dealloc
+{
+    [__managedObjectContext release];
+    [__persistentStoreCoordinator release];
+    [__managedObjectModel release];
+    [super dealloc];
 }
 
 @end

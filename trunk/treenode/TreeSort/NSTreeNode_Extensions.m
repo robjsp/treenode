@@ -15,11 +15,13 @@
 - (NSArray *)descendants;
 {
 	NSMutableArray *array = [NSMutableArray array];
+    
 	for (NSTreeNode *child in [self childNodes]) {
 		[array addObject:child];
 		if (![child isLeaf])
 			[array addObjectsFromArray:[child descendants]];
 	}
+    
 	return [[array copy] autorelease];
 }
 

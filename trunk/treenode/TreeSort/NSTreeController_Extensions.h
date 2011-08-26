@@ -25,6 +25,7 @@
 - (NSTreeNode *)treeNodeForObject:(id)object;
 
 // Conversion of tree to array for easy lookup
+- (NSArray *)filterByRemovingChildrenForNodes:(NSArray *)treeNodes;
 - (NSArray *)flattenedContent;
 - (NSArray *)flattenedNodes;
 - (NSArray *)flattenedSelectedNodes;
