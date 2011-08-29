@@ -18,12 +18,13 @@
     NSManagedObjectModel *__managedObjectModel;
     NSManagedObjectContext *__managedObjectContext;
     
-    IBOutlet NSWindow *window;
     IBOutlet ESTreeController *treeController;
 	IBOutlet ESOutlineView *testOutlineView;
 	IBOutlet NSButton *newLeaf;
 	IBOutlet NSButton *newGroup;
 }
+
+@property (assign) IBOutlet NSWindow *window;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
@@ -38,6 +39,8 @@
 - (IBAction)cut:(id)sender;
 - (IBAction)delete:(id)sender;
 
+- (void)deleteItems;
+- (void)cutItems;
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard;
 

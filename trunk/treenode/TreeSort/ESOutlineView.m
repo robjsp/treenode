@@ -7,9 +7,36 @@
 //
 
 #import "ESOutlineView.h"
-
+#import "TreeSortAppDelegate.h"
 
 @implementation ESOutlineView
+
+#pragma mark -
+#pragma mark Event Handling methods
+
+// Intercept key presses
+- (void)keyDown:(NSEvent*)theEvent {
+    
+    TreeSortAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+	
+	if(theEvent) {
+		switch([[theEvent characters] characterAtIndex:0])
+		{
+			case NSDeleteCharacter:
+				[appDelegate deleteItems];
+				break;
+                                
+			default:
+				[super keyDown:theEvent];
+				break;
+		}
+	}
+}
+
+- (void)dealloc
+{
+    [super dealloc];
+}
 
 // Call super implementation to re-establish expansion states
 - (void)reloadData;
@@ -23,13 +50,8 @@
         else
             [self collapseItem:item];
 	}
-    NSLog(@"reloadData called");
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 @end
 
