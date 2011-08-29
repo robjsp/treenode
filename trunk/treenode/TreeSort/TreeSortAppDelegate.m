@@ -214,16 +214,9 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard
 {
-    // Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained. Move this to
-    // awakeFromNib in a viewController.
-    //Test
-	//NSDictionary *bindingInfo = [testOutlineView infoForBinding:NSContentBinding]; 
-	//NSTreeController *treeController = [bindingInfo valueForKey:NSObservedObjectKey];
-
-    //[pasteBoard declareTypes:[NSArray arrayWithObject:ESNodeIndexPathPasteBoardType] owner:self];
-    
-    // The selected nodes are flattened and the selected managed objects found. The properties of each node are
-    // then read into a dictionary which is inserted into an array.
+//  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
+//  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
+//  The properties of each node are then read into a dictionary which is inserted into an array.
     
     NSArray *selectedObjects = [treeController flattenedSelectedObjects];
         
@@ -250,13 +243,66 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     if([types containsObject:ESObjectURIPasteBoardType]) {
         NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
         
-        // The data is archived up as a series of NSDictionaries when copy or drag occurs
+//  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
+//  The objects are created and the URI representation used to set their properties. The indexPaths for
+//  insertion are found separately.
+       
         NSArray *copiedProperties;
         if(data) {
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
             NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
-            NSLog(@"insertionindexPaths are %@", insertionindexPaths);
+//            NSMutableArray *insertedNodes = [NSMutableArray array];
+
+            NSUInteger i;
+            NSNumber *isLeaf;
+            
+            for (i = 0; (i < [copiedProperties count]); ++i) {
+                
+                isLeaf = [[copiedProperties objectAtIndex:i] valueForKey:@"isLeaf"];
+                if([isLeaf boolValue]) {
+                    ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
+                    if([leafNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+                        [leafNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+                    [treeController insertObject:leafNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];  
+                } else {
+                    ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
+                    if([groupNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+                        [groupNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+//                    NSLog(@"Inserted Node is %@", groupNode);
+                    NSLog(@"%@ has Expansion State = %@", [groupNode valueForKey:@"displayName"], [groupNode valueForKey:@"isExpanded"]);
+                    [treeController insertObject:groupNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
+//                    NSLog(@"Inserted Node is %@", groupNode);
+                    NSLog(@"%@ has Expansion State = %@", [groupNode valueForKey:@"displayName"], [groupNode valueForKey:@"isExpanded"]);
+                    
+                    if(![[groupNode valueForKey:@"isExpanded"] boolValue]) {
+                        NSLog(@"Should collapse item");
+                        [testOutlineView collapseItem:[treeController treeNodeForObject:groupNode]];
+                    } else {
+                        NSLog(@"Should expand item");
+                        [testOutlineView expandItem:[treeController treeNodeForObject:groupNode] expandChildren:NO];
+                    }
+
+
+//                    [insertedNodes addObject:groupNode];
+                }
+            }
+            
+            
+//            for(id insertedNode in insertedNodes) {
+//                if(![[insertedNode valueForKey:@"isLeaf"] boolValue]) {
+//                    NSLog(@"Inserted Node is %@ and it is a group...", insertedNode);
+//                    if([[insertedNode valueForKey:@"isExpanded"] boolValue]) {
+//                        [testOutlineView expandItem:[treeController treeNodeForObject:insertedNode]];
+//                        NSLog(@"Should have expanded item");
+//                    } else {
+//                        [testOutlineView collapseItem:[treeController treeNodeForObject:insertedNode]];
+//                        NSLog(@"Should have collapsed item");
+//                    }
+//                }
+//            }
+            
+            return YES;
         }
     }    
     return NO;
