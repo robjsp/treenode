@@ -23,6 +23,7 @@
         else
             [self collapseItem:item];
 	}
+    NSLog(@"reloadData called");
 }
 
 - (void)dealloc
@@ -31,3 +32,4 @@
 }
 
 @end
+
