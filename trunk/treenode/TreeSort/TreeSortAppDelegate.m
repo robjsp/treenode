@@ -20,6 +20,8 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 
 @implementation TreeSortAppDelegate
 
+@synthesize window;
+
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     // Insert code here to initialize your application
@@ -160,155 +162,6 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 }
 
 
-// Both the methods below set the name of the inserted object automatically by a 'static' count variable
-- (IBAction)newLeaf:(id)sender;
-{
-	ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
-	static NSUInteger count = 0;
-	leafNode.displayName = [NSString stringWithFormat:@"Leaf %i",++count];
-	[treeController insertObject:leafNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];
-}
-
-
-- (IBAction)newGroup:(id)sender;
-{
-	ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
-	static NSUInteger count = 0;
-	groupNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
-	[treeController insertObject:groupNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
-}
-
-
-- (NSArray *)treeNodeSortDescriptors;
-{
-	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
-}
-
-
-// Copy and Paste
-
-- (IBAction)copy:(id)sender
-{	
-    if ([[treeController selectedNodes] count] > 0 ) {
-        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-        [self writeToPasteboard:pasteBoard];
-    }
-}
-
-- (IBAction)paste:(id)sender
-{
-    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-    if(![self readFromPasteboard:pasteBoard])
-        NSLog(@"outlineView paste unsuccessful");
-}
-
-- (IBAction)cut:(id)sender
-{
-//	[outlineViewController cutItems];
-}
-
-- (IBAction)delete:(id)sender
-{
-//	[outlineViewController deleteItems];
-}
-
-- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
-{
-//  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
-//  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
-//  The properties of each node are then read into a dictionary which is inserted into an array.
-    
-    NSArray *selectedObjects = [treeController flattenedSelectedObjects];
-        
-    NSUInteger count = [selectedObjects count];
-    
-    if (count) {
-		NSMutableArray	*copiedProperties = [NSMutableArray arrayWithCapacity:count]; 
-        id treeObject;
-
-		for (treeObject in selectedObjects ) {
-            if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
-                [copiedProperties addObject:[treeObject dictionaryRepresentation]];
-        }
-        
-		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
-        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
-        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
-    }
-}
-
-- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
-{    
-    NSArray *types = [pasteBoard types];
-    if([types containsObject:ESObjectURIPasteBoardType]) {
-        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
-        
-//  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
-//  The objects are created and the URI representation used to set their properties. The indexPaths for
-//  insertion are found separately.
-       
-        NSArray *copiedProperties;
-        if(data) {
-            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
-            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
-//            NSMutableArray *insertedNodes = [NSMutableArray array];
-
-            NSUInteger i;
-            NSNumber *isLeaf;
-            
-            for (i = 0; (i < [copiedProperties count]); ++i) {
-                
-                isLeaf = [[copiedProperties objectAtIndex:i] valueForKey:@"isLeaf"];
-                if([isLeaf boolValue]) {
-                    ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
-                    if([leafNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-                        [leafNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-                    [treeController insertObject:leafNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];  
-                } else {
-                    ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
-                    if([groupNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-                        [groupNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-//                    NSLog(@"Inserted Node is %@", groupNode);
-                    NSLog(@"%@ has Expansion State = %@", [groupNode valueForKey:@"displayName"], [groupNode valueForKey:@"isExpanded"]);
-                    [treeController insertObject:groupNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
-//                    NSLog(@"Inserted Node is %@", groupNode);
-                    NSLog(@"%@ has Expansion State = %@", [groupNode valueForKey:@"displayName"], [groupNode valueForKey:@"isExpanded"]);
-                    
-                    if(![[groupNode valueForKey:@"isExpanded"] boolValue]) {
-                        NSLog(@"Should collapse item");
-                        [testOutlineView collapseItem:[treeController treeNodeForObject:groupNode]];
-                    } else {
-                        NSLog(@"Should expand item");
-                        [testOutlineView expandItem:[treeController treeNodeForObject:groupNode] expandChildren:NO];
-                    }
-
-
-//                    [insertedNodes addObject:groupNode];
-                }
-            }
-            
-            
-//            for(id insertedNode in insertedNodes) {
-//                if(![[insertedNode valueForKey:@"isLeaf"] boolValue]) {
-//                    NSLog(@"Inserted Node is %@ and it is a group...", insertedNode);
-//                    if([[insertedNode valueForKey:@"isExpanded"] boolValue]) {
-//                        [testOutlineView expandItem:[treeController treeNodeForObject:insertedNode]];
-//                        NSLog(@"Should have expanded item");
-//                    } else {
-//                        [testOutlineView collapseItem:[treeController treeNodeForObject:insertedNode]];
-//                        NSLog(@"Should have collapsed item");
-//                    }
-//                }
-//            }
-            
-            return YES;
-        }
-    }    
-    return NO;
-}
-
-
 // undo and redo
 -(BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
 {
@@ -387,6 +240,144 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     [__persistentStoreCoordinator release];
     [__managedObjectModel release];
     [super dealloc];
+}
+
+
+#pragma mark -
+#pragma mark My Stuff Start
+
+
+// Both the methods below set the name of the inserted object automatically by a 'static' count variable
+- (IBAction)newLeaf:(id)sender;
+{
+	ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
+	static NSUInteger count = 0;
+	leafNode.displayName = [NSString stringWithFormat:@"Leaf %i",++count];
+	[treeController insertObject:leafNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];
+}
+
+
+- (IBAction)newGroup:(id)sender;
+{
+	ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
+	static NSUInteger count = 0;
+	groupNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
+	[treeController insertObject:groupNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
+}
+
+
+- (NSArray *)treeNodeSortDescriptors;
+{
+	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
+}
+
+
+// Copy and Paste
+
+- (IBAction)copy:(id)sender
+{	
+    if ([[treeController selectedNodes] count] > 0 ) {
+        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+        [self writeToPasteboard:pasteBoard];
+    }
+}
+
+- (IBAction)paste:(id)sender
+{
+    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+    if(![self readFromPasteboard:pasteBoard])
+        NSLog(@"outlineView paste unsuccessful");
+}
+
+- (IBAction)cut:(id)sender
+{
+   [self cutItems];
+}
+
+- (IBAction)delete:(id)sender
+{
+    [self deleteItems];
+}
+
+- (void)cutItems
+{   
+    if ([[treeController selectedNodes] count] > 0 ) {
+        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+        [self writeToPasteboard:pasteBoard];
+        
+        [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
+    }
+}
+
+- (void)deleteItems
+{
+    [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
+}
+
+
+- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
+{
+    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
+    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
+    //  The properties of each node are then read into a dictionary which is inserted into an array.
+    
+    NSArray *selectedObjects = [treeController flattenedSelectedObjects];
+    
+    NSUInteger count = [selectedObjects count];
+    
+    if (count) {
+		NSMutableArray	*copiedProperties = [NSMutableArray arrayWithCapacity:count]; 
+        id treeObject;
+        
+		for (treeObject in selectedObjects ) {
+            if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
+                [copiedProperties addObject:[treeObject dictionaryRepresentation]];
+        }
+        
+		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
+        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
+        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
+    }
+}
+
+- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
+{    
+    NSArray *types = [pasteBoard types];
+    if([types containsObject:ESObjectURIPasteBoardType]) {
+        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
+        
+        //  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
+        //  The objects are created and the URI representation used to set their properties. The indexPaths for
+        //  insertion are found separately.
+        
+        NSArray *copiedProperties;
+        if(data) {
+            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
+            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
+            
+            NSUInteger i;
+            NSNumber *isLeaf;
+            
+            for (i = 0; (i < [copiedProperties count]); ++i) {
+                
+                isLeaf = [[copiedProperties objectAtIndex:i] valueForKey:@"isLeaf"];
+                if([isLeaf boolValue]) {
+                    ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
+                    if([leafNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+                        [leafNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+                    [treeController insertObject:leafNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];  
+                } else {
+                    ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
+                    if([groupNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+                        [groupNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+                    [treeController insertObject:groupNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
+                }
+            }
+            return YES;
+        }
+    }    
+    return NO;
 }
 
 @end

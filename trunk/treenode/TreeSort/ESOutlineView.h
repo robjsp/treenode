@@ -12,7 +12,6 @@
 @interface ESOutlineView : NSOutlineView
 {
  @private
-    
 }
 
 - (void)reloadData;
