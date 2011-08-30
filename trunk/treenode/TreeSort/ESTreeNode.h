@@ -16,12 +16,19 @@
  @private
 }
 
- @property (nonatomic, retain) NSNumber *isLeaf;
- @property (nonatomic, retain) NSString *displayName;
- @property (nonatomic, retain) NSNumber *sortIndex;
- @property (nonatomic, retain) NSNumber *isSelectable;
- @property (nonatomic, retain) NSSet *children;
- @property (nonatomic, retain) ESTreeNode *parent;
+@property (nonatomic, retain) NSNumber *isLeaf;
+@property (nonatomic, retain) NSString *displayName;
+@property (nonatomic, retain) NSNumber *sortIndex;
+@property (nonatomic, retain) NSNumber *isSelectable;
+@property (nonatomic, retain) NSSet *children;
+@property (nonatomic, retain) ESTreeNode *parent;
+@property (nonatomic, retain) NSNumber *canCollapse;
+@property (nonatomic, retain) NSNumber *canExpand;
+@property (nonatomic, retain) NSNumber *isExpanded;
+@property (nonatomic, retain) NSNumber *isSpecialGroup;
+
+- (NSDictionary *)dictionaryRepresentation;
+- (void)setValuesFromDictionaryRepresentation:(NSDictionary *)dict;
 
 @end
 

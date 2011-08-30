@@ -8,8 +8,6 @@
 
 #import "TreeSortAppDelegate.h"
 #import "ESTreeNode.h"
-#import "ESGroupNode.h"
-#import "ESLeafNode.h"
 #import "NSArray_Extensions.h"
 #import "NSTreeController_Extensions.h"
 #import "NSTreeNode_Extensions.h"
@@ -103,7 +101,16 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     
     NSURL *url = [applicationFilesDirectory URLByAppendingPathComponent:@"TreeSort.storedata"];
     __persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom];
-    if (![__persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType configuration:nil URL:url options:nil error:&error]) {
+    
+    
+/** 
+    Changed the call to addPersistantStore... to add core data model versioning support as according to
+    prag prog book on core data
+ */
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    [dict setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
+    
+    if (![__persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType configuration:nil URL:url options:dict error:&error]) {
         [[NSApplication sharedApplication] presentError:error];
         [__persistentStoreCoordinator release], __persistentStoreCoordinator = nil;
         return nil;
@@ -250,19 +257,25 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 // Both the methods below set the name of the inserted object automatically by a 'static' count variable
 - (IBAction)newLeaf:(id)sender;
 {
-	ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
-	static NSUInteger count = 0;
-	leafNode.displayName = [NSString stringWithFormat:@"Leaf %i",++count];
-	[treeController insertObject:leafNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];
+	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
+    
+    treeNode.isLeaf = [NSNumber numberWithBool:YES];
+    static NSUInteger count = 0;
+	treeNode.displayName = [NSString stringWithFormat:@"Leaf %i",++count];
+    
+	[treeController insertObject:treeNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];
 }
 
 
 - (IBAction)newGroup:(id)sender;
 {
-	ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
-	static NSUInteger count = 0;
-	groupNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
-	[treeController insertObject:groupNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
+	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
+    
+    treeNode.isLeaf = [NSNumber numberWithBool:NO];
+    static NSUInteger count = 0;
+	treeNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
+    
+	[treeController insertObject:treeNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
 }
 
 
@@ -321,8 +334,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
     //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
     //  The properties of each node are then read into a dictionary which is inserted into an array.
     
-    NSArray *selectedObjects = [treeController flattenedSelectedObjects];
-    
+    NSArray *selectedObjects = [treeController flattenedSelectedObjects];    
     NSUInteger count = [selectedObjects count];
     
     if (count) {
@@ -333,7 +345,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
             if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
                 [copiedProperties addObject:[treeObject dictionaryRepresentation]];
         }
-        
+                
 		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
         [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
         [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
@@ -341,7 +353,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 }
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
-{    
+{   
     NSArray *types = [pasteBoard types];
     if([types containsObject:ESObjectURIPasteBoardType]) {
         NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
@@ -357,22 +369,12 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
             NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
             
             NSUInteger i;
-            NSNumber *isLeaf;
             
             for (i = 0; (i < [copiedProperties count]); ++i) {
-                
-                isLeaf = [[copiedProperties objectAtIndex:i] valueForKey:@"isLeaf"];
-                if([isLeaf boolValue]) {
-                    ESLeafNode *leafNode = [NSEntityDescription insertNewObjectForEntityForName:@"Leaf" inManagedObjectContext:[self managedObjectContext]];
-                    if([leafNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-                        [leafNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-                    [treeController insertObject:leafNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];  
-                } else {
-                    ESGroupNode *groupNode = [NSEntityDescription insertNewObjectForEntityForName:@"Group" inManagedObjectContext:[self managedObjectContext]];
-                    if([groupNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-                        [groupNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-                    [treeController insertObject:groupNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
-                }
+                ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
+                if([treeNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+                    [treeNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+                [treeController insertObject:treeNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
             }
             return YES;
         }
@@ -472,14 +474,14 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification;
 {
-	ESGroupNode *collapsedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
+	ESTreeNode *collapsedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	collapsedItem.isExpanded = [NSNumber numberWithBool:NO];
 }
 
 
 - (void)outlineViewItemDidExpand:(NSNotification *)notification;
 {
-	ESGroupNode *expandedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
+	ESTreeNode *expandedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	expandedItem.isExpanded = [NSNumber numberWithBool:YES];
 }
 
