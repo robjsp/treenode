@@ -7,7 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D2359579140D6498007BCFFA /* v1_to_v4.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = D2359578140D6498007BCFFA /* v1_to_v4.xcmappingmodel */; };
+		D23FDFCA14112F700060B327 /* NSManagedObject_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFC914112F700060B327 /* NSManagedObject_Extensions.m */; };
+		D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFCE1411360B0060B327 /* ESCategory.m */; };
+		D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFD41411389E0060B327 /* ESCategoryView.m */; };
 		D25C4953139AE5E40000BCA9 /* ESTreeController.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4952139AE5E40000BCA9 /* ESTreeController.m */; };
 		D25C4956139AE60D0000BCA9 /* ESOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4955139AE60D0000BCA9 /* ESOutlineView.m */; };
 		D27C05DF139A928A009D07BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27C05DE139A928A009D07BE /* Cocoa.framework */; };
@@ -28,7 +30,14 @@
 		D235956E140D4072007BCFFA /* TreeSort 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 2.xcdatamodel"; sourceTree = "<group>"; };
 		D2359572140D4D83007BCFFA /* TreeSort 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 3.xcdatamodel"; sourceTree = "<group>"; };
 		D2359577140D6367007BCFFA /* TreeSort 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 4.xcdatamodel"; sourceTree = "<group>"; };
-		D2359578140D6498007BCFFA /* v1_to_v4.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = v1_to_v4.xcmappingmodel; sourceTree = "<group>"; };
+		D23FDFC814112F700060B327 /* NSManagedObject_Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSManagedObject_Extensions.h; sourceTree = "<group>"; };
+		D23FDFC914112F700060B327 /* NSManagedObject_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSManagedObject_Extensions.m; sourceTree = "<group>"; };
+		D23FDFCC141135BE0060B327 /* TreeSort 5.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 5.xcdatamodel"; sourceTree = "<group>"; };
+		D23FDFCD1411360B0060B327 /* ESCategory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCategory.h; sourceTree = "<group>"; };
+		D23FDFCE1411360B0060B327 /* ESCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCategory.m; sourceTree = "<group>"; };
+		D23FDFD31411389E0060B327 /* ESCategoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCategoryView.h; sourceTree = "<group>"; };
+		D23FDFD41411389E0060B327 /* ESCategoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCategoryView.m; sourceTree = "<group>"; };
+		D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 6.xcdatamodel"; sourceTree = "<group>"; };
 		D25C4951139AE5E40000BCA9 /* ESTreeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESTreeController.h; sourceTree = "<group>"; };
 		D25C4952139AE5E40000BCA9 /* ESTreeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESTreeController.m; sourceTree = "<group>"; };
 		D25C4954139AE60D0000BCA9 /* ESOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESOutlineView.h; sourceTree = "<group>"; };
@@ -76,6 +85,8 @@
 			children = (
 				D25C4954139AE60D0000BCA9 /* ESOutlineView.h */,
 				D25C4955139AE60D0000BCA9 /* ESOutlineView.m */,
+				D23FDFD31411389E0060B327 /* ESCategoryView.h */,
+				D23FDFD41411389E0060B327 /* ESCategoryView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -147,9 +158,10 @@
 			isa = PBXGroup;
 			children = (
 				D27C05F6139A928A009D07BE /* TreeSort.xcdatamodeld */,
-				D2359578140D6498007BCFFA /* v1_to_v4.xcmappingmodel */,
 				D27C0606139A92CF009D07BE /* ESTreeNode.h */,
 				D27C0607139A92CF009D07BE /* ESTreeNode.m */,
+				D23FDFCD1411360B0060B327 /* ESCategory.h */,
+				D23FDFCE1411360B0060B327 /* ESCategory.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -167,6 +179,8 @@
 			isa = PBXGroup;
 			children = (
 				D27C0608139A92CF009D07BE /* NSArray_Extensions.h */,
+				D23FDFC814112F700060B327 /* NSManagedObject_Extensions.h */,
+				D23FDFC914112F700060B327 /* NSManagedObject_Extensions.m */,
 				D27C0609139A92CF009D07BE /* NSArray_Extensions.m */,
 				D27C060A139A92CF009D07BE /* NSIndexPath_Extensions.h */,
 				D27C060B139A92CF009D07BE /* NSIndexPath_Extensions.m */,
@@ -251,7 +265,9 @@
 				D27C0618139A92CF009D07BE /* NSTreeNode_Extensions.m in Sources */,
 				D25C4953139AE5E40000BCA9 /* ESTreeController.m in Sources */,
 				D25C4956139AE60D0000BCA9 /* ESOutlineView.m in Sources */,
-				D2359579140D6498007BCFFA /* v1_to_v4.xcmappingmodel in Sources */,
+				D23FDFCA14112F700060B327 /* NSManagedObject_Extensions.m in Sources */,
+				D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */,
+				D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -382,8 +398,10 @@
 				D235956E140D4072007BCFFA /* TreeSort 2.xcdatamodel */,
 				D27C05F7139A928A009D07BE /* TreeSort.xcdatamodel */,
 				D2359577140D6367007BCFFA /* TreeSort 4.xcdatamodel */,
+				D23FDFCC141135BE0060B327 /* TreeSort 5.xcdatamodel */,
+				D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */,
 			);
-			currentVersion = D2359577140D6367007BCFFA /* TreeSort 4.xcdatamodel */;
+			currentVersion = D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */;
 			path = TreeSort.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

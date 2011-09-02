@@ -20,6 +20,7 @@
     
     IBOutlet ESTreeController *treeController;
 	IBOutlet ESOutlineView *testOutlineView;
+    IBOutlet NSArrayController *categoryController;
 	IBOutlet NSButton *newLeaf;
 	IBOutlet NSButton *newGroup;
 }
