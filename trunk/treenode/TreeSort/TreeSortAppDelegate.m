@@ -8,10 +8,12 @@
 
 #import "TreeSortAppDelegate.h"
 #import "ESTreeNode.h"
+#import "ESCategory.h"
 #import "NSArray_Extensions.h"
 #import "NSTreeController_Extensions.h"
 #import "NSTreeNode_Extensions.h"
 #import "NSIndexPath_Extensions.h"
+#import "NSManagedObject_Extensions.h"
 
 NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
 NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
@@ -254,7 +256,7 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 #pragma mark My Stuff Start
 
 
-// Both the methods below set the name of the inserted object automatically by a 'static' count variable
+// The methods below set the name of the inserted object automatically by a 'static' count variable
 - (IBAction)newLeaf:(id)sender;
 {
 	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
@@ -276,6 +278,17 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 	treeNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
     
 	[treeController insertObject:treeNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
+}
+
+- (IBAction)newCategory:(id)sender;
+{
+    ESCategory *category = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:[self managedObjectContext]];
+    
+    static NSUInteger count = 0;
+    category.displayName = [NSString stringWithFormat:@"Category %i",++count];
+    NSLog(@"newCategory with name = %@", category.displayName);
+    
+    [categoryController insertObject:category atArrangedObjectIndex:[[categoryController arrangedObjects] count]];	
 }
 
 
@@ -328,58 +341,68 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 }
 
 
-- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
-{
-    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
-    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
-    //  The properties of each node are then read into a dictionary which is inserted into an array.
-    
-    NSArray *selectedObjects = [treeController flattenedSelectedObjects];    
-    NSUInteger count = [selectedObjects count];
-    
-    if (count) {
-		NSMutableArray	*copiedProperties = [NSMutableArray arrayWithCapacity:count]; 
-        id treeObject;
-        
-		for (treeObject in selectedObjects ) {
-            if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
-                [copiedProperties addObject:[treeObject dictionaryRepresentation]];
-        }
-                
-		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
-        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
-        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
-    }
-}
+//- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
+//{
+//    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
+//    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
+//    //  The properties of each node are then read into a dictionary which is inserted into an array.
+//    
+//    NSArray *selectedObjects = [treeController flattenedSelectedObjects];    
+//    NSUInteger count = [selectedObjects count];
+//    
+//    if (count) {
+//		NSMutableArray	*copiedProperties = [NSMutableArray arrayWithCapacity:count]; 
+//        id treeObject;
+//        
+//		for (treeObject in selectedObjects ) {
+//            if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
+//                [copiedProperties addObject:[treeObject dictionaryRepresentation]];
+//        }
+//                
+//		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
+//        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
+//        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
+//    }
+//}
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
 {   
-    NSArray *types = [pasteBoard types];
-    if([types containsObject:ESObjectURIPasteBoardType]) {
-        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
-        
-        //  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
-        //  The objects are created and the URI representation used to set their properties. The indexPaths for
-        //  insertion are found separately.
-        
-        NSArray *copiedProperties;
-        if(data) {
-            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
-            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
-            
-            NSUInteger i;
-            
-            for (i = 0; (i < [copiedProperties count]); ++i) {
-                ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
-                if([treeNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-                    [treeNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-                [treeController insertObject:treeNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
-            }
-            return YES;
-        }
-    }    
+//    NSArray *types = [pasteBoard types];
+//    if([types containsObject:ESObjectURIPasteBoardType]) {
+//        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
+//        
+//        //  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
+//        //  The objects are created and the URI representation used to set their properties. The indexPaths for
+//        //  insertion are found separately.
+//        
+//        NSArray *copiedProperties;
+//        if(data) {
+//            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+//            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
+//            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
+//            
+//            NSUInteger i;
+//            
+//            for (i = 0; (i < [copiedProperties count]); ++i) {
+//                ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
+//                if([treeNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
+//                    [treeNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
+//                [treeController insertObject:treeNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
+//            }
+//            return YES;
+//        }
+//    }    
     return NO;
+}
+
+
+- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
+{
+    NSArray *selectedObjects = [treeController flattenedSelectedObjects];
+    
+    id firstObject = [selectedObjects firstObject];
+    NSDictionary *objectProperties = [firstObject objectPropertyTreeInContext:[self managedObjectContext]];
+    NSLog(@"First selected object dictionary tree is %@", objectProperties);
 }
 
 @end

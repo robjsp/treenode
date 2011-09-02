@@ -1,15 +1,25 @@
 //
-//  ESOutlineView.m
+//  ESTableView.m
 //  TreeSort
 //
-//  Created by Russell on 04/06/2011.
+//  Created by Russell Newlands on 02/09/2011.
 //  Copyright 2011 Jominy Research. All rights reserved.
 //
 
-#import "ESOutlineView.h"
+#import "ESCategoryView.h"
 #import "TreeSortAppDelegate.h"
 
-@implementation ESOutlineView
+@implementation ESCategoryView
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        // Initialization code here.
+    }
+    
+    return self;
+}
 
 #pragma mark -
 #pragma mark Event Handling methods
@@ -25,25 +35,11 @@
 			case NSDeleteCharacter:
 				[appDelegate deleteItems];
 				break;
-                                
+                
 			default:
 				[super keyDown:theEvent];
 				break;
 		}
-	}
-}
-
-// Call super implementation to re-establish expansion states
-- (void)reloadData;
-{
-	[super reloadData];
-	NSUInteger row;
-	for (row = 0 ; row < [self numberOfRows] ; row++) {
-		NSTreeNode *item = [self itemAtRow:row];
-		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue])
-			[self expandItem:item];
-        else
-            [self collapseItem:item];
 	}
 }
 
@@ -53,4 +49,3 @@
 }
 
 @end
-
