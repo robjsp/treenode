@@ -159,7 +159,7 @@
 
 
 // Filter out nodes that are descended from each other in a selection to avoid duplication
-- (NSArray *)filterByRemovingChildrenForNodes:(NSArray *)treeNodes
+- (NSArray *)filterByRemovingChildrenForNodes:(NSArray *)treeNodes;
 {
     NSMutableArray *filteredNodes = [NSMutableArray array];
     
@@ -174,7 +174,14 @@
         if(!isChild)
             [filteredNodes addObject:potentialFilteredNode];
     }
-    return filteredNodes;
+    return [[filteredNodes copy] autorelease];
+}
+
+// Convert the filtered nodes to NSManagedObjects
+- (NSArray *)filterObjectsByRemovingChildrenForNodes:(NSArray *)treenodes;
+{
+    // Duplicate selections filtered out when a selected node is an ancestor of another selected node
+    return [[self filterByRemovingChildrenForNodes:treenodes] valueForKey:@"representedObject"];
 }
 
 
@@ -201,7 +208,9 @@
 
 - (NSArray *)flattenedSelectedObjects;
 {
-    // Duplicate selections filtered out when a selected node is an ancestor of another selected node
+    /*  Duplicate selections are filtered out when a selected node is an ancestor of another selected node
+        This is done in the flattenedSelectedNodes Method
+     */
     return [[self flattenedSelectedNodes] valueForKey:@"representedObject"];
 }
 

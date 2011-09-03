@@ -16,7 +16,7 @@
 #import "NSManagedObject_Extensions.h"
 
 NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
-NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
+NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 @implementation TreeSortAppDelegate
 
@@ -365,8 +365,8 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 //    }
 //}
 
-- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
-{   
+//- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
+//{   
 //    NSArray *types = [pasteBoard types];
 //    if([types containsObject:ESObjectURIPasteBoardType]) {
 //        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
@@ -392,18 +392,69 @@ NSString *ESObjectURIPasteBoardType = @"ESObjectURIPasteBoardType";
 //            return YES;
 //        }
 //    }    
-    return NO;
-}
+//    return NO;
+//}
 
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard
 {
-    NSArray *selectedObjects = [treeController flattenedSelectedObjects];
+    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
+    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
+    //  The properties of each node are then read into a dictionary which is inserted into an array.
+
+    // Filter out duplicate selections when a selected node is an ancestor of another selected node
+    NSArray *filteredObjects = [treeController filterObjectsByRemovingChildrenForNodes:[treeController selectedNodes]];
     
-    id firstObject = [selectedObjects firstObject];
-    NSDictionary *objectProperties = [firstObject objectPropertyTreeInContext:[self managedObjectContext]];
-    NSLog(@"First selected object dictionary tree is %@", objectProperties);
+    NSDictionary *selectedObjectProps;
+
+    // Return a dictionary of all objects attributes, their name and their relationship data
+    for(id managedObject in filteredObjects) {
+        selectedObjectProps = [managedObject objectPropertyTreeInContext:[self managedObjectContext]];
+        
+        NSArray *dictKeys = [selectedObjectProps allKeys];
+        
+        for (id key in dictKeys) {
+            NSDictionary *objectPropDict = [selectedObjectProps objectForKey:key];
+            NSString *objectType = [[selectedObjectProps objectForKey:key] valueForKey:@"name"];
+            NSLog(@"copied object name is %@", objectType);
+            
+            if([objectType isEqualToString:@"TreeNode"]) {
+                id treeObject = [[self managedObjectContext] objectWithID:[[self persistentStoreCoordinator] managedObjectIDForURIRepresentation:key]];
+                NSIndexPath *currentIndexPath = [treeController indexPathToObject:treeObject];
+                [objectPropDict setValue:currentIndexPath forKey:@"indexPath"];
+                NSLog(@"copied object name is %@ its indexPath is %@", objectType, currentIndexPath);
+            }
+        }
+        NSLog(@"\n");
+    }
+               
+	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
+    [pasteBoard declareTypes:[NSArray arrayWithObjects:propertiesPasteBoardType, nil] owner:self]; 
+    [pasteBoard setData:copyData forType:propertiesPasteBoardType];
 }
+
+- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
+{   
+    NSArray *types = [pasteBoard types];
+    if([types containsObject:propertiesPasteBoardType]) {
+        NSData  *data = [pasteBoard dataForType:propertiesPasteBoardType];
+        
+        /*  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
+            The objects are created and the URI representation used to set their properties. The properties copied
+            include all attributes, the related object URI's and the original indexPaths for treeNode objects
+         */
+        
+        NSArray *copiedProperties;
+        if(data) {
+            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
+            
+           return YES;
+        }
+    }    
+    return NO;
+}
+
 
 @end
 
