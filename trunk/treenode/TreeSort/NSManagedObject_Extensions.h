@@ -10,6 +10,6 @@
 
 @interface NSManagedObject (NSManagedObject_Extensions)
 
-- (NSDictionary *)objectPropertyTreeInContext:(NSManagedObjectContext *)context;
+- (NSArray *)objectPropertyTreeInContext:(NSManagedObjectContext *)context;
 
 @end

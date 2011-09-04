@@ -10,9 +10,10 @@
 
 @implementation NSManagedObject (NSManagedObject_Extensions)
 
-- (NSDictionary *)objectPropertyTreeInContext:(NSManagedObjectContext *)context;
+- (NSArray *)objectPropertyTreeInContext:(NSManagedObjectContext *)context;
 {
-    NSMutableDictionary *objectPropertyTree = [NSMutableDictionary dictionary];
+    NSMutableArray *objectPropertyTree = [NSMutableArray array];
+    
     NSMutableDictionary *properties = [NSMutableDictionary dictionary];
     NSMutableDictionary *allAttributes = [NSMutableDictionary dictionary];
     NSMutableDictionary *allRelated = [NSMutableDictionary dictionary];
@@ -46,7 +47,7 @@
 
             for (relatedObject in sourceSet) {                
                 //recursive bit, call method again with relatedObject
-                [objectPropertyTree addEntriesFromDictionary:[relatedObject objectPropertyTreeInContext:context]];
+                [objectPropertyTree addObjectsFromArray:[relatedObject objectPropertyTreeInContext:context]];
 			}
             
 		} else {
@@ -60,10 +61,11 @@
         
         [properties setValue:allRelated forKey:@"relationships"];
     }
+       
+    NSURL *selfURI = [[self objectID] URIRepresentation];
+    [properties setValue:selfURI forKey:@"selfURI"];
     
-   
-    NSURL *objectURI = [[self objectID] URIRepresentation];
-    [objectPropertyTree setObject:properties forKey:objectURI];
+    [objectPropertyTree addObject:properties];
     
     // 	return a dictionary of all managed object properties keyed to the object URIDescription
     return [[objectPropertyTree copy] autorelease];
