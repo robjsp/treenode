@@ -405,28 +405,25 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     // Filter out duplicate selections when a selected node is an ancestor of another selected node
     NSArray *filteredObjects = [treeController filterObjectsByRemovingChildrenForNodes:[treeController selectedNodes]];
     
-    NSDictionary *selectedObjectProps;
+    NSArray *selectedObjectProps;
 
     // Return a dictionary of all objects attributes, their name and their relationship data
     for(id managedObject in filteredObjects) {
         selectedObjectProps = [managedObject objectPropertyTreeInContext:[self managedObjectContext]];
-        
-        NSArray *dictKeys = [selectedObjectProps allKeys];
-        
-        for (id key in dictKeys) {
-            NSDictionary *objectPropDict = [selectedObjectProps objectForKey:key];
-            NSString *objectType = [[selectedObjectProps objectForKey:key] valueForKey:@"name"];
-            NSLog(@"copied object name is %@", objectType);
+                
+        for (id propertyDict in selectedObjectProps) {
+            NSString *objectType = [propertyDict valueForKey:@"name"];
+            NSURL *selfURI = [propertyDict valueForKey:@"selfURI"];
             
             if([objectType isEqualToString:@"TreeNode"]) {
-                id treeObject = [[self managedObjectContext] objectWithID:[[self persistentStoreCoordinator] managedObjectIDForURIRepresentation:key]];
+                id treeObject = [[self managedObjectContext] objectWithID:[[self persistentStoreCoordinator] managedObjectIDForURIRepresentation:selfURI]];
                 NSIndexPath *currentIndexPath = [treeController indexPathToObject:treeObject];
-                [objectPropDict setValue:currentIndexPath forKey:@"indexPath"];
-                NSLog(@"copied object name is %@ its indexPath is %@", objectType, currentIndexPath);
+                [propertyDict setValue:currentIndexPath forKey:@"indexPath"];
             }
         }
-        NSLog(@"\n");
     }
+    
+//    NSLog(@"copiedObjectsProperties are %@, \n", selectedObjectProps);
                
 	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
     [pasteBoard declareTypes:[NSArray arrayWithObjects:propertiesPasteBoardType, nil] owner:self]; 
@@ -449,7 +446,74 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
             
-           return YES;
+            NSMutableDictionary *indexForURI = [NSMutableDictionary dictionary];
+            NSUInteger i;
+            
+            NSMutableArray *newObjects = [NSMutableArray array];
+            NSManagedObjectContext *context = [self managedObjectContext]; 
+            
+            // Setup lookup dictionary to find related managedObjects
+            for (i = 0; i < [copiedProperties count]; ++i) {
+                NSDictionary *copiedDict = [copiedProperties objectAtIndex:i];
+                NSURL *selfURI = [copiedDict valueForKey:@"selfURI"];
+                [indexForURI setObject:[NSNumber numberWithUnsignedInteger:i] forKey:selfURI];
+            }
+            
+            // Now create new managed objects setting the attributes of each from the copied properties
+            for (NSDictionary *copiedDict in copiedProperties) {
+                NSString *entityName = [copiedDict valueForKey:@"name"];
+                NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:[self managedObjectContext]];
+                
+                if ([entityName isEqualToString:@"TreeNode"]) {
+                    NSString *objectName = [[copiedDict valueForKey:@"attributes"] valueForKey:@"displayName"];
+                    NSLog(@"copied object %@", objectName);
+                    
+                    NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
+                }
+                                
+                NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
+                for (NSString *attributeName in attributes) {
+                    [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
+                }
+                                
+                [newObjects addObject:newManagedObject];
+            }
+            
+//            NSLog(@"newObjects are %@", newObjects);
+            
+            
+            for (i = 0; i < [newObjects count]; ++i) {
+                NSDictionary *copiedRelationships = [[copiedProperties objectAtIndex:i] valueForKey:@"relationships"];
+//                NSLog(@"relationships to copy are %@", relationships);
+                
+                NSManagedObject *newObject = [newObjects objectAtIndex:i];
+                NSString *entityName = [[newObject entity] name];
+                NSDictionary *relationships = [[NSEntityDescription entityForName:entityName inManagedObjectContext:context] relationshipsByName];
+                
+                for (NSString *relationshipName in [copiedRelationships allKeys]) {
+                    NSArray *relatedObjectURIs = [copiedRelationships valueForKey:relationshipName];
+//                    NSLog(@"relatedObjectURIs = %@", relatedObjectURIs);
+                    
+                    NSRelationshipDescription *relDescription = [relationships objectForKey:relationshipName];  
+                    
+                    if([relDescription isToMany]) {
+                        NSMutableSet *newRelationshipsSet = [newObject mutableSetValueForKey:relationshipName];
+                        for (NSURL *objectURI in relatedObjectURIs) {
+                            NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
+//                            NSLog(@"indexOfObject = %lu", indexOfObject);
+                            [newRelationshipsSet addObject:[newObjects objectAtIndex:indexOfObject]];
+                        }
+//                        [newObject setValue:newRelationshipsSet forKey:relationshipName];
+                    } else {
+                        NSURL *objectURI = [relatedObjectURIs firstObject];
+                        NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
+//                        NSLog(@"objectURI = %@", objectURI);
+                        [newObject setValue:[newObjects objectAtIndex:indexOfObject] forKey:relationshipName];
+                    }
+                }
+            }
+            
+            return YES;
         }
     }    
     return NO;
