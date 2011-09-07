@@ -19,7 +19,7 @@
     NSMutableDictionary *allRelated = [NSMutableDictionary dictionary];
 
 	NSString *entityName = [[self entity] name];
-    [properties setValue:entityName forKey:@"name"];
+    [properties setValue:entityName forKey:@"entityName"];
     
 	NSDictionary *relationships = [[NSEntityDescription entityForName:entityName inManagedObjectContext:context] relationshipsByName];
     NSDictionary *attributes = [[NSEntityDescription entityForName:entityName inManagedObjectContext:context] attributesByName];

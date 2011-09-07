@@ -45,6 +45,7 @@
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard;
 
+- (void)objectsChangedInContext:(NSNotification *)note;
 
 - (NSArray *)treeNodeSortDescriptors; // This is a 'getter' method whose name is used in binding the sortDescriptors property of the treeController
 
