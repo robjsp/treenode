@@ -24,8 +24,11 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    // Insert code here to initialize your application
-}
+    // register for a notification when objects are changed in the Managed Object Context
+	[[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(objectsChangedInContext:)
+                                                 name:NSManagedObjectContextObjectsDidChangeNotification
+                                               object:[self managedObjectContext]];}
 
 - (void)awakeFromNib;
 {
@@ -409,23 +412,13 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     // Return a dictionary of all objects attributes, their name and their relationship data. These will be ordered.
     for(id managedObject in filteredObjects) {
         [selectedObjectProps addObjectsFromArray:[managedObject objectPropertyTreeInContext:[self managedObjectContext]]];
-                
-        for (id propertyDict in selectedObjectProps) {
-            NSString *objectType = [propertyDict valueForKey:@"name"];
-            NSURL *selfURI = [propertyDict valueForKey:@"selfURI"];
-            
-            if([objectType isEqualToString:@"TreeNode"]) {
-                id treeObject = [[self managedObjectContext] objectWithID:[[self persistentStoreCoordinator] managedObjectIDForURIRepresentation:selfURI]];
-                NSIndexPath *currentIndexPath = [treeController indexPathToObject:treeObject];
-                [propertyDict setValue:currentIndexPath forKey:@"indexPath"];
-            }
-        }
     }
                    
 	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
     [pasteBoard declareTypes:[NSArray arrayWithObjects:propertiesPasteBoardType, nil] owner:self]; 
     [pasteBoard setData:copyData forType:propertiesPasteBoardType];
 }
+
 
 - (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
 {   
@@ -449,7 +442,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
             NSMutableArray *newObjects = [NSMutableArray array];
             NSManagedObjectContext *context = [self managedObjectContext]; 
             
-            // Setup lookup dictionary to find related managedObjects
+            // Setup lookup dictionary to find related managedObjects, need to do this first so that we can find the base nodes
             for (i = 0; i < [copiedProperties count]; ++i) {
                 NSDictionary *copiedDict = [copiedProperties objectAtIndex:i];
                 NSURL *selfURI = [copiedDict valueForKey:@"selfURI"];
@@ -459,20 +452,17 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
             
             // Now create new managed objects setting the attributes of each from the copied properties
             for (NSDictionary *copiedDict in copiedProperties) {
-                NSString *entityName = [copiedDict valueForKey:@"name"];
+                NSString *entityName = [copiedDict valueForKey:@"entityName"];
                 NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:[self managedObjectContext]];
-                
+                // Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first
                 if ([entityName isEqualToString:@"TreeNode"]) {
                     NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
                     if(![indexForURI objectForKey:copiedParent]) {
-                        NSString *nodeName = [[copiedDict valueForKey:@"attributes"] valueForKey:@"displayName"];
-                        NSLog(@"copied root node path for %@ is %@", nodeName, insertionIndexPath);
-        
                         [treeController insertObject:newManagedObject atArrangedObjectIndexPath:insertionIndexPath];	
                         insertionIndexPath = [insertionIndexPath indexPathByIncrementingLastIndex];
                     }
                 }
-                                                
+                // Set all the attributes of the objects                                
                 NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
                 for (NSString *attributeName in attributes) {
                     [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
@@ -481,13 +471,9 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                 [newObjects addObject:newManagedObject];
             }
             
-            
-//            NSLog(@"newObjects are %@", newObjects);
-            
-            
+            // Set the relationships of the new objects by using the lookup dictionary.
             for (i = 0; i < [newObjects count]; ++i) {
                 NSDictionary *copiedRelationships = [[copiedProperties objectAtIndex:i] valueForKey:@"relationships"];
-                NSLog(@"relationships to copy are %@", copiedRelationships);
                 
                 NSManagedObject *newObject = [newObjects objectAtIndex:i];
                 NSString *entityName = [[newObject entity] name];
@@ -495,38 +481,69 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                 
                 for (NSString *relationshipName in [copiedRelationships allKeys]) {
                     NSArray *relatedObjectURIs = [copiedRelationships valueForKey:relationshipName];
-                    NSLog(@"relatedObjectURIs = %@", relatedObjectURIs);
-                    
                     NSRelationshipDescription *relDescription = [relationships objectForKey:relationshipName];  
-                    NSLog(@"relationshipName = %@", relationshipName);
-
+                    /*  No need to set to one relationships because the inverse is set automatically by when an object is added
+                        The copied base nodes also have their parent (to - one) relationship set by insert.
+                        the newRelationshipSet points to the original retrieved set and this is what is updated on adding
+                     */
                     if([relDescription isToMany]) {
                         NSMutableSet *newRelationshipsSet = [newObject mutableSetValueForKey:relationshipName];
                         for (NSURL *objectURI in relatedObjectURIs) {
                             NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
-                            NSLog(@"indexOfObject = %lu", indexOfObject);
                             [newRelationshipsSet addObject:[newObjects objectAtIndex:indexOfObject]];
                         }
-                    } else {
-                        //rethink to one stuff!!!
-                        NSURL *objectURI = [relatedObjectURIs firstObject];
-                        NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
-                        NSLog(@"objectURI = %@ and its index is = %lu", objectURI, indexOfObject);
-//                        [newRelationshipsSet addObject:[newObjects objectAtIndex:indexOfObject]];
-//                        [newObject setValue:[newObjects objectAtIndex:indexOfObject] forKey:relationshipName];
-                    }
+                    }                   
                 }
-            }
-//            
+            }            
             return YES;
         }
     }    
     return NO;
 }
 
+#pragma mark -
+#pragma mark Handle Context Changes
+
+// Handles posted notifications and is called when objects in the context
+// change. Used here to intercept and handle redo/undo
+
+- (void)objectsChangedInContext:(NSNotification *)note
+{
+	BOOL isESTreeNOde;
+	
+	// Find out if an undo or redo has occured
+	NSUndoManager *undoManager = [[self managedObjectContext]  undoManager];
+	BOOL isUndoingOrRedoing = [undoManager isUndoing] || [undoManager isRedoing];
+	
+	// Querry the info dictionary to disover the object(s) undone or redone and
+	// find the class these belong to
+	NSSet *updatedObjects = [[note userInfo] objectForKey:NSUpdatedObjectsKey];
+    NSSet *deletedObjects = [[note userInfo] objectForKey:NSDeletedObjectsKey];
+    NSSet *insertedObjects = [[note userInfo] objectForKey:NSInsertedObjectsKey];
+    
+	if ([[updatedObjects anyObject] isKindOfClass:[ESTreeNode class]]) {
+		isESTreeNOde = YES;
+	}			
+	
+	// If undoing or redoing, handle the appropriate model/view changes depending
+	// on the class of MO
+	if(isUndoingOrRedoing) {
+		if(isESTreeNOde) {
+			// This restores all expansion states passing root as parent, necessary
+			// because these are not restored on an undo or redo
+//			[collectionViewController restoreExpansionStates:nil];
+            NSLog(@"objects changed in context");
+            NSLog(@"insertedObjects are %@", insertedObjects);
+		}
+	}
+}
+
+
 
 @end
 
+#pragma mark -
+#pragma mark Delegate Methods
 
 @implementation TreeSortAppDelegate (NSOutlineViewDragAndDrop)
 

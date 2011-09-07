@@ -20,7 +20,6 @@
 - (NSTreeNode *)nextSiblingOfNodeAtIndexPath:(NSIndexPath *)indexPath;
 - (NSTreeNode *)nodeAtIndexPath:(NSIndexPath *)indexPath;
 - (NSIndexPath *)indexPathForInsertion;
-- (NSArray *)indexPathsForNodeProperties:(NSArray *)properties atInsertionIndexPath:(NSIndexPath *)insertionIndexPath;
 - (NSIndexPath *)indexPathToObject:(id)object;
 - (NSTreeNode *)treeNodeForObject:(id)object;
 

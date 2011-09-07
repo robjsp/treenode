@@ -27,9 +27,6 @@
 @property (nonatomic, retain) NSNumber *isExpanded;
 @property (nonatomic, retain) NSNumber *isSpecialGroup;
 
-- (NSDictionary *)dictionaryRepresentation;
-- (void)setValuesFromDictionaryRepresentation:(NSDictionary *)dict;
-
 @end
 
 @interface ESTreeNode (CoreDataGeneratedAccessors)
