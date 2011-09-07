@@ -465,7 +465,8 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                 // Set all the attributes of the objects                                
                 NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
                 for (NSString *attributeName in attributes) {
-                    [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
+                    if(![attributeName isEqualToString:@"sortIndex"]) // So as not to override the sortIndex property set by the treeController subclass on insertion
+                        [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                                 
                 [newObjects addObject:newManagedObject];
@@ -494,7 +495,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                         }
                     }                   
                 }
-            }            
+            }
             return YES;
         }
     }    
@@ -509,7 +510,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (void)objectsChangedInContext:(NSNotification *)note
 {
-	BOOL isESTreeNOde;
+	BOOL isESTreeNode;
 	
 	// Find out if an undo or redo has occured
 	NSUndoManager *undoManager = [[self managedObjectContext]  undoManager];
@@ -522,18 +523,14 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     NSSet *insertedObjects = [[note userInfo] objectForKey:NSInsertedObjectsKey];
     
 	if ([[updatedObjects anyObject] isKindOfClass:[ESTreeNode class]]) {
-		isESTreeNOde = YES;
+		isESTreeNode = YES;
 	}			
 	
 	// If undoing or redoing, handle the appropriate model/view changes depending
 	// on the class of MO
 	if(isUndoingOrRedoing) {
-		if(isESTreeNOde) {
-			// This restores all expansion states passing root as parent, necessary
-			// because these are not restored on an undo or redo
-//			[collectionViewController restoreExpansionStates:nil];
-            NSLog(@"objects changed in context");
-            NSLog(@"insertedObjects are %@", insertedObjects);
+		if(isESTreeNode) {
+			
 		}
 	}
 }
