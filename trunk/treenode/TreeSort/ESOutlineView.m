@@ -40,10 +40,13 @@
 	NSUInteger row;
 	for (row = 0 ; row < [self numberOfRows] ; row++) {
 		NSTreeNode *item = [self itemAtRow:row];
-		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue])
+		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {
 			[self expandItem:item];
-        else
+            NSLog(@"Expand item isLeaf = %d", [item isLeaf]);
+        } else {
             [self collapseItem:item];
+            NSLog(@"Collapse item isLeaf = %d", [item isLeaf]);
+        }
 	}
 }
 
