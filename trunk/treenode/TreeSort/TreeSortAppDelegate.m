@@ -454,6 +454,14 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
             for (NSDictionary *copiedDict in copiedProperties) {
                 NSString *entityName = [copiedDict valueForKey:@"entityName"];
                 NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:[self managedObjectContext]];
+                
+                // Set all the attributes of the object, do this before calling NSTreeController's insert Object method                               
+                NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
+                for (NSString *attributeName in attributes) {
+                    if(![attributeName isEqualToString:@"sortIndex"]) // So as not to override the sortIndex property set by the treeController subclass on insertion
+                        [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
+                }
+                
                 // Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first
                 if ([entityName isEqualToString:@"TreeNode"]) {
                     NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
@@ -461,12 +469,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                         [treeController insertObject:newManagedObject atArrangedObjectIndexPath:insertionIndexPath];	
                         insertionIndexPath = [insertionIndexPath indexPathByIncrementingLastIndex];
                     }
-                }
-                // Set all the attributes of the objects                                
-                NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
-                for (NSString *attributeName in attributes) {
-                    if(![attributeName isEqualToString:@"sortIndex"]) // So as not to override the sortIndex property set by the treeController subclass on insertion
-                        [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                                 
                 [newObjects addObject:newManagedObject];
@@ -534,7 +536,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 		}
 	}
 }
-
 
 
 @end
