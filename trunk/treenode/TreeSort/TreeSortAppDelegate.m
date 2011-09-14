@@ -457,25 +457,20 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                 // Set all the attributes of the object, do this before calling NSTreeController's insert Object method                               
                 NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
                 for (NSString *attributeName in attributes) {
-                    if(![attributeName isEqualToString:@"sortIndex"]) // So as not to override the sortIndex property set by the treeController subclass on insertion
-                        [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
+                    [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                 
-                /*  Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first
-                    or set other positions using sortIndex attribute
+                /*  Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first.
                  */
                 if ([entityName isEqualToString:@"TreeNode"]) {
                     NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
                     if(![indexForURI objectForKey:copiedParent]) {
                         [treeController insertObject:newManagedObject atArrangedObjectIndexPath:insertionIndexPath];	
                         insertionIndexPath = [insertionIndexPath indexPathByIncrementingLastIndex];
-                    } else {
-                        [newManagedObject setValue:[attributes valueForKey:@"sortIndex"] forKey:@"sortIndex"];
                     }
                 }
                 
                 [newObjects addObject:newManagedObject];
-//                [self restoreExpansionStates:newManagedObject];
             }
             
             // Set the relationships of the new objects by using the lookup dictionary.
@@ -502,45 +497,13 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                     }                   
                 }
             }
+            // To ensure all expansion states are reset after a paste. Can only be done after relationships are set
+            [testOutlineView reloadData];  
             return YES;
         }
     }    
     return NO;
 }
-
-//- (void)restoreExpansionStates:(NSManagedObject*)parent;
-//{
-//	NSMutableSet *childrenSet = [parent mutableSetValueForKey:@"children"];
-//    NSLog(@"children are %@", childrenSet);
-//	NSManagedObject *aManagedObject;
-//    
-//    for (aManagedObject in childrenSet) {
-//        /*  if expanded and has children then restore their expansion states
-//            'valueForKey:@children' will return an array. intValue because the returned
-//            type is BOOL which is actually a char and is numerically compared here YES is defined as '1'.
-//         */
-//		if (![[aManagedObject valueForKey:@"isLeaf"] boolValue] && [[aManagedObject valueForKey:@"isExpanded"] boolValue]) {
-//            // then restore expansion states.
-//            
-//            [testOutlineView expandItem:[self treeNodeForObject:aManagedObject]];
-//        //            // And now recursively restore the expansion states of all children
-//        //            [self restoreExpansionStates:aManagedObject];
-//        }
-//        //recursive bit, call method again with relatedObject
-//    }
-//    
-//	while(aManagedObject = [enumerator nextObject]) {
-//		// if expanded and has children then restore their expansion states
-//		// 'valueForKey:@children' will return an array. intValue because the returned
-//		// type is BOOL which is actually a char and is numerically compared here YES is defined as '1'.
-//		if(([[aManagedObject valueForKey:@"isExpanded"] intValue] == YES) && ([[aManagedObject valueForKey:@"children"] count] > 0)) {
-//			// then restore expansion states.
-//            [collectionView expandItem:[collectionTreeController outlineItemForObject:aManagedObject]];
-//            // And now recursively restore the expansion states of all children
-//            [self restoreExpansionStates:aManagedObject];
-//		}
-//	}
-//}
 
 
 #pragma mark -

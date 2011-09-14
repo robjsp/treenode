@@ -1673,7 +1673,6 @@
 							<reference key="NSHScroller" ref="203159958"/>
 							<reference key="NSContentView" ref="17666146"/>
 							<reference key="NSHeaderClipView" ref="119982930"/>
-							<reference key="NSCornerView" ref="242581599"/>
 							<bytes key="NSScrollAmts">QSAAAEEgAABBoAAAQaAAAA</bytes>
 						</object>
 						<object class="NSScrollView" id="422155703">
@@ -1828,7 +1827,6 @@
 							<reference key="NSHScroller" ref="404694642"/>
 							<reference key="NSContentView" ref="762258632"/>
 							<reference key="NSHeaderClipView" ref="631653536"/>
-							<reference key="NSCornerView" ref="781374783"/>
 							<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 						</object>
 						<object class="NSButton" id="444186363">
