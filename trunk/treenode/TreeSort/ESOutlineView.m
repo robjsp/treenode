@@ -38,14 +38,14 @@
 {
 	[super reloadData];
 	NSUInteger row;
+    NSLog(@"numberOfRows = %lu", [self numberOfRows]);
 	for (row = 0 ; row < [self numberOfRows] ; row++) {
 		NSTreeNode *item = [self itemAtRow:row];
+        NSLog(@"row %lu is redrawn", row);
 		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {
 			[self expandItem:item];
-            NSLog(@"Expand item isLeaf = %d", [item isLeaf]);
         } else {
             [self collapseItem:item];
-            NSLog(@"Collapse item isLeaf = %d", [item isLeaf]);
         }
 	}
 }
