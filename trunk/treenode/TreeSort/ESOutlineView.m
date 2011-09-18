@@ -36,10 +36,12 @@
 // Call super implementation to re-establish expansion states
 - (void)reloadData;
 {
-	[super reloadData];
-	NSUInteger row;
+    [super reloadData];
+	
+    NSUInteger row;
     NSLog(@"numberOfRows = %lu", [self numberOfRows]);
-	for (row = 0 ; row < [self numberOfRows] ; row++) {
+	
+    for (row = 0 ; row < [self numberOfRows] ; row++) {
 		NSTreeNode *item = [self itemAtRow:row];
         NSLog(@"row %lu is redrawn", row);
 		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {

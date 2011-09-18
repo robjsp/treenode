@@ -267,7 +267,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     treeNode.isLeaf = [NSNumber numberWithBool:YES];
     static NSUInteger count = 0;
 	treeNode.displayName = [NSString stringWithFormat:@"Leaf %i",++count];
-    
 	[treeController insertObject:treeNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];
 }
 
@@ -342,61 +341,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 {
     [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
 }
-
-
-//- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
-//{
-//    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
-//    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
-//    //  The properties of each node are then read into a dictionary which is inserted into an array.
-//    
-//    NSArray *selectedObjects = [treeController flattenedSelectedObjects];    
-//    NSUInteger count = [selectedObjects count];
-//    
-//    if (count) {
-//		NSMutableArray	*copiedProperties = [NSMutableArray arrayWithCapacity:count]; 
-//        id treeObject;
-//        
-//		for (treeObject in selectedObjects ) {
-//            if ([treeObject respondsToSelector:@selector(dictionaryRepresentation)])
-//                [copiedProperties addObject:[treeObject dictionaryRepresentation]];
-//        }
-//                
-//		NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:copiedProperties];
-//        [pasteBoard declareTypes:[NSArray arrayWithObjects:ESObjectURIPasteBoardType, nil] owner:self]; 
-//        [pasteBoard setData:copyData forType:ESObjectURIPasteBoardType];
-//    }
-//}
-
-//- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
-//{   
-//    NSArray *types = [pasteBoard types];
-//    if([types containsObject:ESObjectURIPasteBoardType]) {
-//        NSData  *data = [pasteBoard dataForType:ESObjectURIPasteBoardType];
-//        
-//        //  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
-//        //  The objects are created and the URI representation used to set their properties. The indexPaths for
-//        //  insertion are found separately.
-//        
-//        NSArray *copiedProperties;
-//        if(data) {
-//            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-//            NSIndexPath *initialIndexPath = [treeController indexPathForInsertion];
-//            NSArray *insertionindexPaths = [treeController indexPathsForNodeProperties:copiedProperties atInsertionIndexPath:initialIndexPath];
-//            
-//            NSUInteger i;
-//            
-//            for (i = 0; (i < [copiedProperties count]); ++i) {
-//                ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:[self managedObjectContext]];
-//                if([treeNode respondsToSelector:@selector(setValuesFromDictionaryRepresentation:)])
-//                    [treeNode setValuesFromDictionaryRepresentation:[copiedProperties objectAtIndex:i]];
-//                [treeController insertObject:treeNode atArrangedObjectIndexPath:[insertionindexPaths objectAtIndex:i]];
-//            }
-//            return YES;
-//        }
-//    }    
-//    return NO;
-//}
 
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard
@@ -612,7 +556,9 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item;
 {
-	if ([[(ESTreeNode *)[item representedObject] isLeaf] boolValue] || [(NSTreeNode *)item isLeaf])
+    NSLog(@"shouldCollapseItem called for %@", [[item representedObject] valueForKey:@"displayName"]);
+        
+    if ([[(ESTreeNode *)[item representedObject] isLeaf] boolValue] || [(NSTreeNode *)item isLeaf])
 		return NO;
 	return [[[item representedObject] canCollapse] boolValue];
 }
@@ -631,11 +577,59 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	return [[(ESTreeNode *)[item representedObject] isSelectable] boolValue];
 }
 
+- (void)outlineViewItemWillCollapse:(NSNotification *)notification
+{
+    NSLog(@"outlineViewItemWillCollapse");
+    ESTreeNode *itemToCollapse = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];;
+    BOOL visible = YES;    
+    ESTreeNode *parent = [itemToCollapse valueForKey:@"parent"];
+    
+    while (parent && parent != nil) {
+        if (![[parent valueForKey:@"isExpanded"] boolValue]) {
+          visible = NO;
+            NSLog(@"parent is collapsed");
+            break;
+        }
+        parent = [parent valueForKey:@"parent"];
+    }
+    
+    ESTreeNode *parentNode = [itemToCollapse valueForKey:@"parent"];
+    if(visible) {
+        itemToCollapse.isExpanded = [NSNumber numberWithBool:NO];
+    }
+    
+}
+
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification;
-{
-	ESTreeNode *collapsedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
-	collapsedItem.isExpanded = [NSNumber numberWithBool:NO];
+{   
+    NSManagedObject *itemToCollapse = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];;
+    BOOL visible = NO;    
+    NSManagedObject *parent = [itemToCollapse valueForKey:@"parent"];
+    
+//    while (parent && parent != nil) {
+//        if (![parent valueForKey:@"isExpanded"]) {
+//            visible = NO;
+//            NSLog(@"parent is collapsed");
+//            break;
+//        }
+//        parent = [parent valueForKey:@"parent"];
+//    }
+    
+    if(visible) {
+    }
+
+    
+//    ESTreeNode *collapsedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
+//    collapsedItem.isExpanded = [NSNumber numberWithBool:NO];
+    
+    NSArray *allNodes = [treeController flattenedContent];
+    for (NSManagedObject *nodeObject in allNodes) {
+        NSString *nodeName = [nodeObject valueForKey:@"displayName"];
+        NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
+        NSLog(@"On outlineViewItemDidCollapse managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
+    }
+
 }
 
 
@@ -643,6 +637,13 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 {
 	ESTreeNode *expandedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	expandedItem.isExpanded = [NSNumber numberWithBool:YES];
+    
+    NSArray *allNodes = [treeController flattenedContent];
+    for (NSManagedObject *nodeObject in allNodes) {
+        NSString *nodeName = [nodeObject valueForKey:@"displayName"];
+        NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
+        NSLog(@"On outlineViewItemDidExpand managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
+    }
 }
 
 @end
