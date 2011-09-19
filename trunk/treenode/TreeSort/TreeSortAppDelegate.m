@@ -478,7 +478,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	// on the class of MO
 	if(isUndoingOrRedoing) {
 		if(isESTreeNode) {
-			
+			NSLog(@"updatedObjects are %@", updatedObjects);
 		}
 	}
 }
@@ -556,8 +556,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldCollapseItem:(id)item;
 {
-    NSLog(@"shouldCollapseItem called for %@", [[item representedObject] valueForKey:@"displayName"]);
-        
     if ([[(ESTreeNode *)[item representedObject] isLeaf] boolValue] || [(NSTreeNode *)item isLeaf])
 		return NO;
 	return [[[item representedObject] canCollapse] boolValue];
@@ -577,59 +575,43 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	return [[(ESTreeNode *)[item representedObject] isSelectable] boolValue];
 }
 
+
 - (void)outlineViewItemWillCollapse:(NSNotification *)notification
 {
-    NSLog(@"outlineViewItemWillCollapse");
+    /*  The following ensures that if a ancestor node is collapsed the descendent group nodes
+        don't also collapse. It seems that this method is called for every descendent in a 
+        collapse of an ancestor
+     */
+    
     ESTreeNode *itemToCollapse = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];;
     BOOL visible = YES;    
     ESTreeNode *parent = [itemToCollapse valueForKey:@"parent"];
     
-    while (parent && parent != nil) {
+    /*  Walk up the tree from the node to see if it is expanded. If an ancestor node is collapsed
+         then preserve the expanded state of the node
+     */
+    while (parent) {
         if (![[parent valueForKey:@"isExpanded"] boolValue]) {
           visible = NO;
-            NSLog(@"parent is collapsed");
             break;
         }
         parent = [parent valueForKey:@"parent"];
     }
     
-    ESTreeNode *parentNode = [itemToCollapse valueForKey:@"parent"];
     if(visible) {
         itemToCollapse.isExpanded = [NSNumber numberWithBool:NO];
     }
-    
 }
 
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification;
 {   
-    NSManagedObject *itemToCollapse = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];;
-    BOOL visible = NO;    
-    NSManagedObject *parent = [itemToCollapse valueForKey:@"parent"];
-    
-//    while (parent && parent != nil) {
-//        if (![parent valueForKey:@"isExpanded"]) {
-//            visible = NO;
-//            NSLog(@"parent is collapsed");
-//            break;
-//        }
-//        parent = [parent valueForKey:@"parent"];
-//    }
-    
-    if(visible) {
-    }
-
-    
-//    ESTreeNode *collapsedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
-//    collapsedItem.isExpanded = [NSNumber numberWithBool:NO];
-    
     NSArray *allNodes = [treeController flattenedContent];
     for (NSManagedObject *nodeObject in allNodes) {
         NSString *nodeName = [nodeObject valueForKey:@"displayName"];
         NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
         NSLog(@"On outlineViewItemDidCollapse managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
     }
-
 }
 
 
@@ -644,6 +626,9 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
         NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
         NSLog(@"On outlineViewItemDidExpand managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
     }
+    
+    // To ensure all model expansion states are resynced with the view after a paste.
+    [testOutlineView reloadData];
 }
 
 @end
