@@ -39,17 +39,27 @@
     [super reloadData];
 	
     NSUInteger row;
-    NSLog(@"numberOfRows = %lu", [self numberOfRows]);
 	
+    
+    /*  Disable undo so that the change is not recorded with the undo manager.
+        Especially needed at startup or an unwanted undo is recorded.
+     */
+    NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
+    [context processPendingChanges];     
+    [[context undoManager] disableUndoRegistration];
+    
     for (row = 0 ; row < [self numberOfRows] ; row++) {
 		NSTreeNode *item = [self itemAtRow:row];
-        NSLog(@"row %lu is redrawn", row);
 		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {
 			[self expandItem:item];
         } else {
             [self collapseItem:item];
         }
 	}
+    
+    // Renable undo
+    [context processPendingChanges];
+    [[context undoManager] enableUndoRegistration];
 }
 
 - (void)dealloc
