@@ -11,6 +11,7 @@
 
 
 @implementation ESCategory
+
 @dynamic displayName;
 @dynamic treeNode;
 

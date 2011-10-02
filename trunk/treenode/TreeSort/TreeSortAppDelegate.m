@@ -467,22 +467,24 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	// Querry the info dictionary to disover the object(s) undone or redone and
 	// find the class these belong to
 	NSSet *updatedObjects = [[note userInfo] objectForKey:NSUpdatedObjectsKey];
-    NSSet *deletedObjects = [[note userInfo] objectForKey:NSDeletedObjectsKey];
-    NSSet *insertedObjects = [[note userInfo] objectForKey:NSInsertedObjectsKey];
     
 	if ([[updatedObjects anyObject] isKindOfClass:[ESTreeNode class]]) {
 		isESTreeNode = YES;
 	}			
 	
-	// If undoing or redoing, handle the appropriate model/view changes depending
-	// on the class of MO
+	/*  If undoing or redoing, handle the appropriate model/view changes depending
+        on the class of MO
+     */
 	if(isUndoingOrRedoing) {
 		if(isESTreeNode) {
-			NSLog(@"updatedObjects are %@", updatedObjects);
+            /*  This restores all expansion states passing root as parent, necessary
+                because these are not restored on an undo or redo
+             */
+
+            [testOutlineView reloadData];  
 		}
 	}
 }
-
 
 @end
 
@@ -606,12 +608,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (void)outlineViewItemDidCollapse:(NSNotification *)notification;
 {   
-    NSArray *allNodes = [treeController flattenedContent];
-    for (NSManagedObject *nodeObject in allNodes) {
-        NSString *nodeName = [nodeObject valueForKey:@"displayName"];
-        NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
-        NSLog(@"On outlineViewItemDidCollapse managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
-    }
 }
 
 
@@ -619,13 +615,6 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 {
 	ESTreeNode *expandedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	expandedItem.isExpanded = [NSNumber numberWithBool:YES];
-    
-    NSArray *allNodes = [treeController flattenedContent];
-    for (NSManagedObject *nodeObject in allNodes) {
-        NSString *nodeName = [nodeObject valueForKey:@"displayName"];
-        NSNumber *isExpanded = [nodeObject valueForKey:@"isExpanded"];
-        NSLog(@"On outlineViewItemDidExpand managedObject name was %@ and it's expansion state was %@", nodeName, isExpanded);
-    }
     
     // To ensure all model expansion states are resynced with the view after a paste.
     [testOutlineView reloadData];
