@@ -313,7 +313,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 - (IBAction)paste:(id)sender
 {
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-    if(![self readFromPasteboard:pasteBoard])
+    if(![self createObjectsFromPasteboard:pasteBoard])
         NSLog(@"outlineView paste unsuccessful");
 }
 
@@ -364,7 +364,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 }
 
 
-- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard
 {   
     NSArray *types = [pasteBoard types];
     if([types containsObject:propertiesPasteBoardType]) {

@@ -43,7 +43,7 @@
 - (void)deleteItems;
 - (void)cutItems;
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
-- (BOOL)readFromPasteboard:(NSPasteboard *)pasteBoard;
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;
 
 - (void)objectsChangedInContext:(NSNotification *)note;
 
