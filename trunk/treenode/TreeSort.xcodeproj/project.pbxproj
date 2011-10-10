@@ -24,6 +24,7 @@
 		D27C0616139A92CF009D07BE /* NSIndexPath_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D27C060B139A92CF009D07BE /* NSIndexPath_Extensions.m */; };
 		D27C0617139A92CF009D07BE /* NSTreeController_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D27C060D139A92CF009D07BE /* NSTreeController_Extensions.m */; };
 		D27C0618139A92CF009D07BE /* NSTreeNode_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D27C060F139A92CF009D07BE /* NSTreeNode_Extensions.m */; };
+		D27DC612144354CD0005163B /* OutlineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D27DC611144354CD0005163B /* OutlineViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +67,8 @@
 		D27C060D139A92CF009D07BE /* NSTreeController_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSTreeController_Extensions.m; sourceTree = "<group>"; };
 		D27C060E139A92CF009D07BE /* NSTreeNode_Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSTreeNode_Extensions.h; sourceTree = "<group>"; };
 		D27C060F139A92CF009D07BE /* NSTreeNode_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSTreeNode_Extensions.m; sourceTree = "<group>"; };
+		D27DC610144354CD0005163B /* OutlineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewController.h; sourceTree = "<group>"; };
+		D27DC611144354CD0005163B /* OutlineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -171,6 +174,8 @@
 			children = (
 				D25C4951139AE5E40000BCA9 /* ESTreeController.h */,
 				D25C4952139AE5E40000BCA9 /* ESTreeController.m */,
+				D27DC610144354CD0005163B /* OutlineViewController.h */,
+				D27DC611144354CD0005163B /* OutlineViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -268,6 +273,7 @@
 				D23FDFCA14112F700060B327 /* NSManagedObject_Extensions.m in Sources */,
 				D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */,
 				D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */,
+				D27DC612144354CD0005163B /* OutlineViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
