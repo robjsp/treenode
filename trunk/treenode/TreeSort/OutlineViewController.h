@@ -22,7 +22,19 @@
     IBOutlet NSButton *newGroup;
 }
 
+- (NSArray *)treeNodeSortDescriptors; // This is a 'getter' method whose name is used in binding the sortDescriptors property of the treeController
+
 - (IBAction)newLeaf:(id)sender;
 - (IBAction)newGroup:(id)sender;
+
+- (IBAction)copy:(id)sender;
+- (IBAction)paste:(id)sender;
+- (IBAction)cut:(id)sender;
+- (IBAction)delete:(id)sender;
+
+- (void)deleteItems;
+- (void)cutItems;
+- (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;
 
 @end
