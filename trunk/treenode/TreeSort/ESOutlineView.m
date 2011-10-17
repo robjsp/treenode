@@ -15,22 +15,23 @@
 #pragma mark Event Handling methods
 
 // Intercept key presses
-- (void)keyDown:(NSEvent *)theEvent {
+- (void)keyDown:(NSEvent *)theEvent
+{
     
-    TreeSortAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
-	
-	if(theEvent) {
-		switch([[theEvent characters] characterAtIndex:0])
-		{
-			case NSDeleteCharacter:
-				[appDelegate deleteItems];
-				break;
-                                
-			default:
-				[super keyDown:theEvent];
-				break;
-		}
-	}
+//    TreeSortAppDelegate *appDelegate = [[NSApplication sharedApplication] delegate];
+//	
+//	if(theEvent) {
+//		switch([[theEvent characters] characterAtIndex:0])
+//		{
+//			case NSDeleteCharacter:
+//				[appDelegate deleteItems];
+//				break;
+//                                
+//			default:
+//				[super keyDown:theEvent];
+//				break;
+//		}
+//	}
 }
 
 // Call super implementation to re-establish expansion states

@@ -23,15 +23,26 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 - (id)init
 {
     self = [super init];
-    if (self) {
-        context = [[NSApp delegate] managedObjectContext];
-    }
-    
     return self;
 }
 
 
-// The methods below set the name of the inserted object automatically by a 'static' count variable
+- (void)awakeFromNib;
+{
+	[testOutlineView registerForDraggedTypes:[NSArray arrayWithObject:ESNodeIndexPathPasteBoardType]];
+    context = [[NSApp delegate] managedObjectContext];
+}
+
+
+- (NSArray *)treeNodeSortDescriptors;
+{
+	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
+}
+
+
+#pragma mark -
+#pragma mark create new tree items
+
 - (IBAction)newLeaf:(id)sender;
 {
 	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:context];
@@ -52,6 +63,156 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	treeNode.displayName = [NSString stringWithFormat:@"Group %i",++count];
     
 	[treeController insertObject:treeNode atArrangedObjectIndexPath:[treeController indexPathForInsertion]];	
+}
+
+
+#pragma mark -
+#pragma mark Copy and Paste
+
+- (IBAction)copy:(id)sender
+{	
+    if ([[treeController selectedNodes] count] > 0 ) {
+        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+        [self writeToPasteboard:pasteBoard];
+    }
+}
+
+- (IBAction)paste:(id)sender
+{
+    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+    if(![self createObjectsFromPasteboard:pasteBoard])
+        NSLog(@"outlineView paste unsuccessful");
+}
+
+- (IBAction)cut:(id)sender
+{
+    [self cutItems];
+}
+
+- (IBAction)delete:(id)sender
+{
+    [self deleteItems];
+}
+
+- (void)cutItems
+{   
+    if ([[treeController selectedNodes] count] > 0 ) {
+        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+        [self writeToPasteboard:pasteBoard];
+        
+        [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
+    }
+}
+
+- (void)deleteItems
+{
+    [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
+}
+
+
+- (void)writeToPasteboard:(NSPasteboard *)pasteBoard
+{
+    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
+    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
+    //  The properties of each node are then read into a dictionary which is inserted into an array.
+    
+    // Filter out duplicate selections when a selected node is an ancestor of another selected node
+    NSArray *filteredObjects = [treeController filterObjectsByRemovingChildrenForNodes:[treeController selectedNodes]];    
+    NSMutableArray *selectedObjectProps = [NSMutableArray array];
+    
+    // Return a dictionary of all objects attributes, their name and their relationship data. These will be ordered.
+    for(id managedObject in filteredObjects) {
+        [selectedObjectProps addObjectsFromArray:[managedObject objectPropertyTreeInContext:context]];
+    }
+    
+	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
+    [pasteBoard declareTypes:[NSArray arrayWithObjects:propertiesPasteBoardType, nil] owner:self]; 
+    [pasteBoard setData:copyData forType:propertiesPasteBoardType];
+}
+
+
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard
+{   
+    NSArray *types = [pasteBoard types];
+    if([types containsObject:propertiesPasteBoardType]) {
+        NSData  *data = [pasteBoard dataForType:propertiesPasteBoardType];
+        
+        /*  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
+         The objects are created and the URI representation used to set their properties. The properties copied
+         include all attributes, the related object URI's and the original indexPaths for treeNode objects
+         */
+        
+        NSArray *copiedProperties;
+        if(data) {
+            copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            NSIndexPath *insertionIndexPath = [treeController indexPathForInsertion];
+            
+            NSMutableDictionary *indexForURI = [NSMutableDictionary dictionary];
+            NSUInteger i;
+            
+            NSMutableArray *newObjects = [NSMutableArray array];
+            
+            // Setup lookup dictionary to find related managedObjects, need to do this first so that we can find the base nodes
+            for (i = 0; i < [copiedProperties count]; ++i) {
+                NSDictionary *copiedDict = [copiedProperties objectAtIndex:i];
+                NSURL *selfURI = [copiedDict valueForKey:@"selfURI"];
+                [indexForURI setObject:[NSNumber numberWithUnsignedInteger:i] forKey:selfURI];
+            }
+            
+            // Now create new managed objects setting the attributes of each from the copied properties
+            for (NSDictionary *copiedDict in copiedProperties) {
+                NSString *entityName = [copiedDict valueForKey:@"entityName"];
+                NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
+                
+                // Set all the attributes of the object, do this before calling NSTreeController's insert Object method                               
+                NSDictionary *attributes = [copiedDict valueForKey:@"attributes"];
+                for (NSString *attributeName in attributes) {
+                    [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
+                }
+                
+                /*  Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first.
+                 */
+                if ([entityName isEqualToString:@"TreeNode"]) {
+                    NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
+                    if(![indexForURI objectForKey:copiedParent]) {
+                        [treeController insertObject:newManagedObject atArrangedObjectIndexPath:insertionIndexPath];	
+                        insertionIndexPath = [insertionIndexPath indexPathByIncrementingLastIndex];
+                    }
+                }
+                
+                [newObjects addObject:newManagedObject];
+            }
+            
+            // Set the relationships of the new objects by using the lookup dictionary.
+            for (i = 0; i < [newObjects count]; ++i) {
+                NSDictionary *copiedRelationships = [[copiedProperties objectAtIndex:i] valueForKey:@"relationships"];
+                
+                NSManagedObject *newObject = [newObjects objectAtIndex:i];
+                NSString *entityName = [[newObject entity] name];
+                NSDictionary *relationships = [[NSEntityDescription entityForName:entityName inManagedObjectContext:context] relationshipsByName];
+                
+                for (NSString *relationshipName in [copiedRelationships allKeys]) {
+                    NSArray *relatedObjectURIs = [copiedRelationships valueForKey:relationshipName];
+                    NSRelationshipDescription *relDescription = [relationships objectForKey:relationshipName];  
+                    /*  No need to set to one relationships because the inverse is set automatically by when an object is added
+                     The copied base nodes also have their parent (to - one) relationship set by insert.
+                     the newRelationshipSet points to the original retrieved set and this is what is updated on adding
+                     */
+                    if([relDescription isToMany]) {
+                        NSMutableSet *newRelationshipsSet = [newObject mutableSetValueForKey:relationshipName];
+                        for (NSURL *objectURI in relatedObjectURIs) {
+                            NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
+                            [newRelationshipsSet addObject:[newObjects objectAtIndex:indexOfObject]];
+                        }
+                    }                   
+                }
+            }
+            // To ensure all expansion states are reset after a paste. Can only be done after relationships are set
+            [testOutlineView reloadData];  
+            return YES;
+        }
+    }    
+    return NO;
 }
 
 @end
