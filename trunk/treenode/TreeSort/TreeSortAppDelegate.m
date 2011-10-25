@@ -294,10 +294,10 @@
 }
 
 
-//- (NSArray *)treeNodeSortDescriptors;
-//{
-//	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
-//}
+- (NSArray *)treeNodeSortDescriptors;
+{
+	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
+}
 
 
 // Copy and Paste

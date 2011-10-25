@@ -41,7 +41,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 
 #pragma mark -
-#pragma mark create new tree items
+#pragma mark Create New OutlineView Items
 
 - (IBAction)newLeaf:(id)sender;
 {
@@ -69,34 +69,34 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 #pragma mark -
 #pragma mark Copy and Paste
 
-- (IBAction)copy:(id)sender
+- (void)copy
 {	
-    if ([[treeController selectedNodes] count] > 0 ) {
+    if([[treeController selectedNodes] count] > 0 ) {
         NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
         [self writeToPasteboard:pasteBoard];
     }
 }
 
-- (IBAction)paste:(id)sender
+- (void)paste
 {
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
     if(![self createObjectsFromPasteboard:pasteBoard])
         NSLog(@"outlineView paste unsuccessful");
 }
 
-- (IBAction)cut:(id)sender
+- (void)cut
 {
     [self cutItems];
 }
 
-- (IBAction)delete:(id)sender
+- (void)delete
 {
     [self deleteItems];
 }
 
 - (void)cutItems
 {   
-    if ([[treeController selectedNodes] count] > 0 ) {
+    if([[treeController selectedNodes] count] > 0 ) {
         NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
         [self writeToPasteboard:pasteBoard];
         

@@ -8,11 +8,19 @@
 
 #import <Foundation/Foundation.h>
 
+@class OutlineViewController;
 
 @interface ESOutlineView : NSOutlineView
 {
  @private
+    IBOutlet OutlineViewController *outlineViewController;
 }
+
+- (IBAction)copy:(id)sender;
+- (IBAction)paste:(id)sender;
+- (IBAction)cut:(id)sender;
+- (IBAction)delete:(id)sender;
+
 
 - (void)reloadData;
 
