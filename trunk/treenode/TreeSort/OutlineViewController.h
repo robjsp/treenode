@@ -27,10 +27,10 @@
 - (IBAction)newLeaf:(id)sender;
 - (IBAction)newGroup:(id)sender;
 
-- (IBAction)copy:(id)sender;
-- (IBAction)paste:(id)sender;
-- (IBAction)cut:(id)sender;
-- (IBAction)delete:(id)sender;
+- (void)copy;
+- (void)paste;
+- (void)cut;
+- (void)delete;
 
 - (void)deleteItems;
 - (void)cutItems;

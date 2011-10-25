@@ -7,6 +7,7 @@
 //
 
 #import "ESOutlineView.h"
+#import "OutlineViewController.h"
 #import "TreeSortAppDelegate.h"
 
 @implementation ESOutlineView
@@ -34,6 +35,31 @@
 //	}
 }
 
+- (IBAction)copy:(id)sender;
+{	
+	NSLog(@"Copy called");
+    [outlineViewController copy];
+}
+
+- (IBAction)paste:(id)sender
+{
+    NSLog(@"Paste called");
+    [outlineViewController paste];
+}
+
+- (IBAction)cut:(id)sender
+{
+    NSLog(@"Cut called");
+    [outlineViewController cut];
+}
+
+- (IBAction)delete:(id)sender
+{
+    NSLog(@"delete called");
+    [outlineViewController delete];
+}
+
+
 // Call super implementation to re-establish expansion states
 - (void)reloadData;
 {
@@ -45,9 +71,8 @@
     /*  Disable undo so that the change is not recorded with the undo manager.
         Especially needed at startup or an unwanted undo is recorded.
      */
-    NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
-    [context processPendingChanges];     
-    [[context undoManager] disableUndoRegistration];
+//    NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
+//    [[context undoManager] disableUndoRegistration];
     
     for (row = 0 ; row < [self numberOfRows] ; row++) {
 		NSTreeNode *item = [self itemAtRow:row];
@@ -59,8 +84,7 @@
 	}
     
     // Renable undo
-    [context processPendingChanges];
-    [[context undoManager] enableUndoRegistration];
+//    [[context undoManager] enableUndoRegistration];
 }
 
 - (void)dealloc
