@@ -31,6 +31,18 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 {
 	[testOutlineView registerForDraggedTypes:[NSArray arrayWithObject:ESNodeIndexPathPasteBoardType]];
     context = [[NSApp delegate] managedObjectContext];
+    
+    /*  Must do this because the the data is not fully loaded straight away. This
+        occurs after awakeFromNib is called. The data is manually fetched with a default
+        fetch request (the nil). Automatically sets content flag had to be turned off in IB.
+	*/  
+    
+	if([treeController fetchWithRequest:nil merge:NO error:nil]) {
+		[self restoreExpansionStates];
+	}
+   
+    // To prevent an unwanted undo event after data is loaded
+    [[context undoManager] removeAllActions];
 }
 
 
@@ -207,12 +219,28 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
                     }                   
                 }
             }
-            // To ensure all expansion states are reset after a paste. Can only be done after relationships are set
-            [testOutlineView reloadData];  
+            
+            // The model is not synched with the view so update it to restore expansion states.
+            [self restoreExpansionStates];  
             return YES;
         }
     }    
     return NO;
+}
+
+
+- (void)restoreExpansionStates;
+{        
+    NSUInteger row;
+    
+    for (row = 0 ; row < [testOutlineView numberOfRows] ; row++) {
+        NSTreeNode *item = [testOutlineView itemAtRow:row];
+        if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {
+            [testOutlineView expandItem:item];
+        } else {
+            [testOutlineView collapseItem:item];
+        }
+    }
 }
 
 @end
@@ -269,11 +297,13 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     
 	[treeController moveNodes:draggedNodes toIndexPath:[proposedParentIndexPath indexPathByAddingIndex:proposedChildIndex]];
     
+    // The model is not synched with the view so update it to restore expansion states.
+    [self restoreExpansionStates];
+    
 	return YES;
 }
 
 @end
-
 
 
 @implementation OutlineViewController (NSOutlineViewDelegate)
@@ -348,7 +378,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	expandedItem.isExpanded = [NSNumber numberWithBool:YES];
     
     // To ensure all model expansion states are resynced with the view after a paste.
-    [testOutlineView reloadData];
+//    [testOutlineView reloadData];
 }
 
 @end

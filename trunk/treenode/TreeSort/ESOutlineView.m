@@ -65,7 +65,7 @@
 {
     [super reloadData];
 	
-    NSUInteger row;
+//    NSUInteger row;
 	
     
     /*  Disable undo so that the change is not recorded with the undo manager.
@@ -74,14 +74,14 @@
 //    NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
 //    [[context undoManager] disableUndoRegistration];
     
-    for (row = 0 ; row < [self numberOfRows] ; row++) {
-		NSTreeNode *item = [self itemAtRow:row];
-		if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {
-			[self expandItem:item];
-        } else {
-            [self collapseItem:item];
-        }
-	}
+//    for (row = 0 ; row < [self numberOfRows] ; row++) {
+//        NSTreeNode *item = [self itemAtRow:row];
+//        if (![item isLeaf] && [[[item representedObject] valueForKey:@"isExpanded"] boolValue]) {   
+//            [self expandItem:item];
+//        } else {
+//            [self collapseItem:item];
+//        }
+//    }
     
     // Renable undo
 //    [[context undoManager] enableUndoRegistration];

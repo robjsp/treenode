@@ -10,6 +10,7 @@
 
 @class ESTreeController;
 @class ESOutlineView;
+@class OutlineViewController;
 
 @interface TreeSortAppDelegate : NSObject <NSApplicationDelegate>
 {
@@ -20,9 +21,8 @@
     
     IBOutlet ESTreeController *treeController;
 	IBOutlet ESOutlineView *testOutlineView;
+    IBOutlet OutlineViewController *outlineViewController;
     IBOutlet NSArrayController *categoryController;
-//	IBOutlet NSButton *newLeaf;
-//	IBOutlet NSButton *newGroup;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -32,19 +32,6 @@
 @property (nonatomic, retain, readonly) NSManagedObjectContext *managedObjectContext;
 
 - (IBAction)saveAction:sender;
-
-//- (IBAction)newLeaf:(id)sender;
-//- (IBAction)newGroup:(id)sender;
-//
-//- (IBAction)copy:(id)sender;
-//- (IBAction)paste:(id)sender;
-//- (IBAction)cut:(id)sender;
-//- (IBAction)delete:(id)sender;
-//
-//- (void)deleteItems;
-//- (void)cutItems;
-//- (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
-//- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;
 
 - (void)objectsChangedInContext:(NSNotification *)note;
 

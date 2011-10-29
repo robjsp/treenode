@@ -37,4 +37,6 @@
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
 - (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;
 
+- (void)restoreExpansionStates;
+
 @end
