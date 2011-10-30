@@ -1338,7 +1338,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{700, 527}</string>
 				<object class="NSView" key="NSWindowView" id="439893737">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1393,7 +1393,6 @@
 							<int key="NSvFlags">292</int>
 							<string key="NSFrame">{{373, 18}, {87, 25}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
-							<reference key="NSNextKeyView"/>
 							<bool key="NSEnabled">YES</bool>
 							<object class="NSButtonCell" key="NSCell" id="24699071">
 								<int key="NSCellFlags">-2080244224</int>
@@ -1508,7 +1507,7 @@
 											<int key="NSvFlags">256</int>
 											<string key="NSFrameSize">{438, 409}</string>
 											<reference key="NSSuperview" ref="17666146"/>
-											<reference key="NSNextKeyView" ref="1067285987"/>
+											<reference key="NSNextKeyView" ref="119982930"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTableHeaderView" key="NSHeaderView" id="352210595">
 												<reference key="NSNextResponder" ref="119982930"/>
@@ -1652,13 +1651,12 @@
 							</object>
 							<string key="NSFrame">{{20, 80}, {440, 427}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
-							<reference key="NSNextKeyView" ref="119982930"/>
+							<reference key="NSNextKeyView" ref="17666146"/>
 							<int key="NSsFlags">133682</int>
 							<reference key="NSVScroller" ref="1067285987"/>
 							<reference key="NSHScroller" ref="203159958"/>
 							<reference key="NSContentView" ref="17666146"/>
 							<reference key="NSHeaderClipView" ref="119982930"/>
-							<reference key="NSCornerView" ref="242581599"/>
 							<bytes key="NSScrollAmts">QSAAAEEgAABBoAAAQaAAAA</bytes>
 						</object>
 						<object class="NSScrollView" id="422155703">
@@ -1676,7 +1674,7 @@
 											<int key="NSvFlags">256</int>
 											<string key="NSFrameSize">{438, 409}</string>
 											<reference key="NSSuperview" ref="762258632"/>
-											<reference key="NSNextKeyView" ref="993850506"/>
+											<reference key="NSNextKeyView" ref="631653536"/>
 											<string key="NSReuseIdentifierKey">_NS:1197</string>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTableHeaderView" key="NSHeaderView" id="572003160">
@@ -1798,14 +1796,13 @@
 							</object>
 							<string key="NSFrame">{{473, 80}, {440, 427}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
-							<reference key="NSNextKeyView" ref="631653536"/>
+							<reference key="NSNextKeyView" ref="762258632"/>
 							<string key="NSReuseIdentifierKey">_NS:1193</string>
 							<int key="NSsFlags">133682</int>
 							<reference key="NSVScroller" ref="993850506"/>
 							<reference key="NSHScroller" ref="404694642"/>
 							<reference key="NSContentView" ref="762258632"/>
 							<reference key="NSHeaderClipView" ref="631653536"/>
-							<reference key="NSCornerView" ref="781374783"/>
 							<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 						</object>
 						<object class="NSButton" id="444186363">
@@ -1852,7 +1849,6 @@
 						</object>
 					</object>
 					<string key="NSFrameSize">{933, 527}</string>
-					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="862674022"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1920, 1178}}</string>
@@ -2847,14 +2843,6 @@
 						<reference key="destination" ref="212857012"/>
 					</object>
 					<int key="connectionID">730</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">treeController</string>
-						<reference key="source" ref="661763839"/>
-						<reference key="destination" ref="325225597"/>
-					</object>
-					<int key="connectionID">731</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">

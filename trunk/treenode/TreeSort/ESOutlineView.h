@@ -21,7 +21,4 @@
 - (IBAction)cut:(id)sender;
 - (IBAction)delete:(id)sender;
 
-
-- (void)reloadData;
-
 @end
