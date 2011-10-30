@@ -9,15 +9,7 @@
 #import "TreeSortAppDelegate.h"
 #import "ESTreeNode.h"
 #import "ESCategory.h"
-#import "NSArray_Extensions.h"
-#import "ESTreeController.h"
-#import "NSTreeController_Extensions.h"
-#import "NSTreeNode_Extensions.h"
-#import "NSIndexPath_Extensions.h"
-#import "NSManagedObject_Extensions.h"
 #import "OutlineViewController.h"
-
-//NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 @implementation TreeSortAppDelegate
 
@@ -274,12 +266,6 @@
 }
 
 
-- (NSArray *)treeNodeSortDescriptors;
-{
-	return [NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"sortIndex" ascending:YES] autorelease]];
-}
-
-
 #pragma mark -
 #pragma mark Handle Context Changes
 
@@ -312,6 +298,11 @@
                 controller contents is done because the outlineView is not synched with the 
                 model changes in an undo. I first used -reloadData here but this did nothing.
              */;
+            
+            // Get the treeController
+            NSDictionary *bindingInfo = [testOutlineView infoForBinding:NSContentBinding]; 
+            treeController = [bindingInfo valueForKey:NSObservedObjectKey];
+            
             [treeController rearrangeObjects];
             [outlineViewController restoreExpansionStates];
 		}

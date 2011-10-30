@@ -15,7 +15,11 @@
 {
  @private
     NSManagedObjectContext *context;
-    IBOutlet ESTreeController *treeController;
+    ESTreeController *treeController;
+    
+    NSString *treeNodeIndexPathPBoardType;
+    NSString *outlineViewPropertiesPBoardType;
+    
     IBOutlet ESOutlineView *testOutlineView;
     IBOutlet NSArrayController *categoryController;
     IBOutlet NSButton *newLeaf;

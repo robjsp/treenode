@@ -19,7 +19,8 @@
     NSManagedObjectModel *__managedObjectModel;
     NSManagedObjectContext *__managedObjectContext;
     
-    IBOutlet ESTreeController *treeController;
+    ESTreeController *treeController;
+    
 	IBOutlet ESOutlineView *testOutlineView;
     IBOutlet OutlineViewController *outlineViewController;
     IBOutlet NSArrayController *categoryController;
@@ -34,7 +35,5 @@
 - (IBAction)saveAction:sender;
 
 - (void)objectsChangedInContext:(NSNotification *)note;
-
-- (NSArray *)treeNodeSortDescriptors; // This is a 'getter' method whose name is used in binding the sortDescriptors property of the treeController
 
 @end

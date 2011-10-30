@@ -8,17 +8,16 @@
 
 #import "OutlineViewController.h"
 #import "ESTreeNode.h"
-#import "ESCategory.h"
 #import "NSArray_Extensions.h"
 #import "NSTreeController_Extensions.h"
 #import "NSTreeNode_Extensions.h"
 #import "NSIndexPath_Extensions.h"
 #import "NSManagedObject_Extensions.h"
 
-NSString *ESNodeIndexPathPasteBoardType = @"ESNodeIndexPathPasteBoardType";
-NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
-
 @implementation OutlineViewController
+
+#pragma mark -
+#pragma mark Initialisation stuff
 
 - (id)init
 {
@@ -29,7 +28,15 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (void)awakeFromNib;
 {
-	[testOutlineView registerForDraggedTypes:[NSArray arrayWithObject:ESNodeIndexPathPasteBoardType]];
+    // Get the treeController
+	NSDictionary *bindingInfo = [testOutlineView infoForBinding:NSContentBinding]; 
+	treeController = [bindingInfo valueForKey:NSObservedObjectKey];
+    
+    //Set the custom data types for drag and drop and copy and paste
+    treeNodeIndexPathPBoardType = @"treeNodeIndexPathPBoardType";
+    outlineViewPropertiesPBoardType = @"outlineViewPropertiesPBoardType";
+    
+	[testOutlineView registerForDraggedTypes:[NSArray arrayWithObject:treeNodeIndexPathPBoardType]];
     context = [[NSApp delegate] managedObjectContext];
     
     /*  Must do this because the the data is not fully loaded straight away. This
@@ -93,7 +100,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 {
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
     if(![self createObjectsFromPasteboard:pasteBoard])
-        NSLog(@"outlineView paste unsuccessful");
+        NSLog(@"Paste unsuccessful. No treeNode property dictionary type found on pasteboard");
 }
 
 - (void)cut
@@ -124,9 +131,9 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard
 {
-    //  Get the treeController. I know I've got a it as an outlet, but I want to make this more self-contained.
-    //  Move this to awakeFromNib in a viewController. The selected nodes are flattened and the selected managed objects found.
-    //  The properties of each node are then read into a dictionary which is inserted into an array.
+    /*  The selected nodes are flattened and the selected managed objects found.
+      The properties of each node are then read into a dictionary which is inserted into an array.
+     */
     
     // Filter out duplicate selections when a selected node is an ancestor of another selected node
     NSArray *filteredObjects = [treeController filterObjectsByRemovingChildrenForNodes:[treeController selectedNodes]];    
@@ -138,16 +145,16 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
     }
     
 	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
-    [pasteBoard declareTypes:[NSArray arrayWithObjects:propertiesPasteBoardType, nil] owner:self]; 
-    [pasteBoard setData:copyData forType:propertiesPasteBoardType];
+    [pasteBoard declareTypes:[NSArray arrayWithObjects:outlineViewPropertiesPBoardType, nil] owner:self]; 
+    [pasteBoard setData:copyData forType:outlineViewPropertiesPBoardType];
 }
 
 
 - (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard
 {   
     NSArray *types = [pasteBoard types];
-    if([types containsObject:propertiesPasteBoardType]) {
-        NSData  *data = [pasteBoard dataForType:propertiesPasteBoardType];
+    if([types containsObject:outlineViewPropertiesPBoardType]) {
+        NSData  *data = [pasteBoard dataForType:outlineViewPropertiesPBoardType];
         
         /*  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
          The objects are created and the URI representation used to set their properties. The properties copied
@@ -255,8 +262,8 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView writeItems:(NSArray *)items toPasteboard:(NSPasteboard *)pasteBoard;
 {
-	[pasteBoard declareTypes:[NSArray arrayWithObject:ESNodeIndexPathPasteBoardType] owner:self];
-	[pasteBoard setData:[NSKeyedArchiver archivedDataWithRootObject:[items valueForKey:@"indexPath"]] forType:ESNodeIndexPathPasteBoardType];
+	[pasteBoard declareTypes:[NSArray arrayWithObject:treeNodeIndexPathPBoardType] owner:self];
+	[pasteBoard setData:[NSKeyedArchiver archivedDataWithRootObject:[items valueForKey:@"indexPath"]] forType:treeNodeIndexPathPBoardType];
 	return YES;
 }
 
@@ -266,7 +273,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 	if (proposedChildIndex == -1) // will be -1 if the mouse is hovering over a leaf node
 		return NSDragOperationNone;
     
-	NSArray *draggedIndexPaths = [NSKeyedUnarchiver unarchiveObjectWithData:[[info draggingPasteboard] dataForType:ESNodeIndexPathPasteBoardType]];
+	NSArray *draggedIndexPaths = [NSKeyedUnarchiver unarchiveObjectWithData:[[info draggingPasteboard] dataForType:treeNodeIndexPathPBoardType]];
 	BOOL targetIsValid = YES;
 	for (NSIndexPath *indexPath in draggedIndexPaths) {
 		NSTreeNode *node = [treeController nodeAtIndexPath:indexPath];
@@ -283,7 +290,7 @@ NSString *propertiesPasteBoardType = @"propertiesPasteBoardType";
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView acceptDrop:(id < NSDraggingInfo >)info item:(id)proposedParentItem childIndex:(NSInteger)proposedChildIndex;
 {
-	NSArray *droppedIndexPaths = [NSKeyedUnarchiver unarchiveObjectWithData:[[info draggingPasteboard] dataForType:ESNodeIndexPathPasteBoardType]];
+	NSArray *droppedIndexPaths = [NSKeyedUnarchiver unarchiveObjectWithData:[[info draggingPasteboard] dataForType:treeNodeIndexPathPBoardType]];
 	
 	NSMutableArray *draggedNodes = [NSMutableArray array];
 	for (NSIndexPath *indexPath in droppedIndexPaths)
