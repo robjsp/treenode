@@ -11,7 +11,7 @@
 @class ESTreeController;
 @class ESOutlineView;
 
-@interface OutlineViewController : NSObject
+@interface OutlineViewController : NSObject <NSOutlineViewDelegate>
 {
  @private
     NSManagedObjectContext *context;
@@ -19,12 +19,11 @@
     
     NSString *treeNodeIndexPathPBoardType;
     NSString *outlineViewPropertiesPBoardType;
-    
-    IBOutlet ESOutlineView *testOutlineView;
-    IBOutlet NSArrayController *categoryController;
-    IBOutlet NSButton *newLeaf;
-    IBOutlet NSButton *newGroup;
 }
+
+@property (assign) IBOutlet ESOutlineView *testOutlineView;
+@property (assign) IBOutlet NSButton *newLeaf;
+@property (assign) IBOutlet NSButton *newGroup;
 
 - (NSArray *)treeNodeSortDescriptors; // This is a 'getter' method whose name is used in binding the sortDescriptors property of the treeController
 

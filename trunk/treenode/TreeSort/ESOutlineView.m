@@ -11,6 +11,8 @@
 
 @implementation ESOutlineView
 
+@synthesize outlineViewController;
+
 #pragma mark -
 #pragma mark Event Handling methods
 

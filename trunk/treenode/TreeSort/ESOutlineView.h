@@ -13,8 +13,9 @@
 @interface ESOutlineView : NSOutlineView
 {
  @private
-    IBOutlet OutlineViewController *outlineViewController;
 }
+
+@property (assign) IBOutlet OutlineViewController *outlineViewController;
 
 - (IBAction)copy:(id)sender;
 - (IBAction)paste:(id)sender;
