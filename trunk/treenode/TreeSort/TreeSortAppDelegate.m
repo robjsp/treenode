@@ -14,6 +14,9 @@
 @implementation TreeSortAppDelegate
 
 @synthesize window;
+@synthesize testOutlineView;
+@synthesize outlineViewController;
+@synthesize categoryController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {

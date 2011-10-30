@@ -16,6 +16,10 @@
 
 @implementation OutlineViewController
 
+@synthesize testOutlineView;
+@synthesize newLeaf;
+@synthesize newGroup;
+
 #pragma mark -
 #pragma mark Initialisation stuff
 
@@ -250,13 +254,9 @@
     }
 }
 
-@end
-
 
 #pragma mark -
-#pragma mark Delegate Methods
-
-@implementation OutlineViewController (NSOutlineViewDragAndDrop)
+#pragma mark NSOutlineView Drag and Drop Delegate Methods
 
 // items is an array of treeNodes.[items valueForKey:@"indexPath"] is a KVC trick to produce an array of the selected managedObject indexPaths 
 
@@ -310,10 +310,8 @@
 	return YES;
 }
 
-@end
-
-
-@implementation OutlineViewController (NSOutlineViewDelegate)
+#pragma mark -
+#pragma mark Other NSOutlineView Delegate Methods
 
 // Returns a Boolean that indicates whether a given row should be drawn in the “group row” style. Off by default.
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item;
@@ -383,9 +381,8 @@
 {
 	ESTreeNode *expandedItem = [[[notification userInfo] valueForKey:@"NSObject"] representedObject];
 	expandedItem.isExpanded = [NSNumber numberWithBool:YES];
-    
-    // To ensure all model expansion states are resynced with the view after a paste.
-//    [testOutlineView reloadData];
 }
 
 @end
+
+

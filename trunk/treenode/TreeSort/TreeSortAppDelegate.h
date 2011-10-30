@@ -20,13 +20,12 @@
     NSManagedObjectContext *__managedObjectContext;
     
     ESTreeController *treeController;
-    
-	IBOutlet ESOutlineView *testOutlineView;
-    IBOutlet OutlineViewController *outlineViewController;
-    IBOutlet NSArrayController *categoryController;
 }
 
 @property (assign) IBOutlet NSWindow *window;
+@property (assign) IBOutlet ESOutlineView *testOutlineView;
+@property (assign) IBOutlet OutlineViewController *outlineViewController;
+@property (assign) IBOutlet NSArrayController *categoryController;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
