@@ -109,12 +109,30 @@
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     [dict setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
     
-    if (![__persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType configuration:nil URL:url options:dict error:&error]) {
-        [[NSApplication sharedApplication] presentError:error];
+    if(![__persistentStoreCoordinator addPersistentStoreWithType:NSXMLStoreType configuration:nil URL:url options:dict error:&error]) {        
+        NSDictionary *ui = [error userInfo];
+        if(ui) {
+            NSLog(@"%@:%@ %@", [self class], NSStringFromSelector(_cmd), [error localizedDescription]);
+            for (NSError *suberror in [ui valueForKey:NSDetailedErrorsKey]) {
+                NSLog(@"\t%@", [suberror localizedDescription]); }
+        } else {
+            NSLog(@"%@:%@ %@", [self class], NSStringFromSelector(_cmd), [error localizedDescription]);
+        }
+        
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert setAlertStyle:NSCriticalAlertStyle];
+        [alert setMessageText:@"Unable to load the application database."];
+        NSString *msgText = nil;
+        msgText = [NSString stringWithFormat:@"The application database %@%@%@\n%@",
+                   @"is either corrupt or was created by a newer ", @"version of the application. Please contact ", @"support to assist with this error.\n\nError: ", [error localizedDescription]];
+        [alert setInformativeText:msgText]; [alert addButtonWithTitle:@"Quit"]; [alert runModal];
+        [alert release];
+        
+        exit(1);
+        
         [__persistentStoreCoordinator release], __persistentStoreCoordinator = nil;
         return nil;
     }
-
     return __persistentStoreCoordinator;
 }
 
@@ -250,22 +268,6 @@
     [__persistentStoreCoordinator release];
     [__managedObjectModel release];
     [super dealloc];
-}
-
-
-#pragma mark -
-#pragma mark My Stuff Start
-
-
-- (IBAction)newCategory:(id)sender;
-{
-    ESCategory *category = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:[self managedObjectContext]];
-    
-    static NSUInteger count = 0;
-    category.displayName = [NSString stringWithFormat:@"Category %i",++count];
-    NSLog(@"newCategory with name = %@", category.displayName);
-    
-    [categoryController insertObject:category atArrangedObjectIndex:[[categoryController arrangedObjects] count]];	
 }
 
 
