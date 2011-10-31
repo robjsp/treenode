@@ -10,6 +10,7 @@
 		D23FDFCA14112F700060B327 /* NSManagedObject_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFC914112F700060B327 /* NSManagedObject_Extensions.m */; };
 		D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFCE1411360B0060B327 /* ESCategory.m */; };
 		D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFD41411389E0060B327 /* ESCategoryView.m */; };
+		D252FFD0145F1D4300F93B14 /* CategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D252FFCF145F1D4300F93B14 /* CategoryViewController.m */; };
 		D25C4953139AE5E40000BCA9 /* ESTreeController.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4952139AE5E40000BCA9 /* ESTreeController.m */; };
 		D25C4956139AE60D0000BCA9 /* ESOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4955139AE60D0000BCA9 /* ESOutlineView.m */; };
 		D27C05DF139A928A009D07BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27C05DE139A928A009D07BE /* Cocoa.framework */; };
@@ -39,6 +40,8 @@
 		D23FDFD31411389E0060B327 /* ESCategoryView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESCategoryView.h; sourceTree = "<group>"; };
 		D23FDFD41411389E0060B327 /* ESCategoryView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESCategoryView.m; sourceTree = "<group>"; };
 		D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 6.xcdatamodel"; sourceTree = "<group>"; };
+		D252FFCE145F1D4300F93B14 /* CategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CategoryViewController.h; sourceTree = "<group>"; };
+		D252FFCF145F1D4300F93B14 /* CategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CategoryViewController.m; sourceTree = "<group>"; };
 		D25C4951139AE5E40000BCA9 /* ESTreeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESTreeController.h; sourceTree = "<group>"; };
 		D25C4952139AE5E40000BCA9 /* ESTreeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESTreeController.m; sourceTree = "<group>"; };
 		D25C4954139AE60D0000BCA9 /* ESOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESOutlineView.h; sourceTree = "<group>"; };
@@ -69,6 +72,7 @@
 		D27C060F139A92CF009D07BE /* NSTreeNode_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSTreeNode_Extensions.m; sourceTree = "<group>"; };
 		D27DC610144354CD0005163B /* OutlineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutlineViewController.h; sourceTree = "<group>"; };
 		D27DC611144354CD0005163B /* OutlineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OutlineViewController.m; sourceTree = "<group>"; };
+		D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 7.xcdatamodel"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +178,8 @@
 			children = (
 				D25C4951139AE5E40000BCA9 /* ESTreeController.h */,
 				D25C4952139AE5E40000BCA9 /* ESTreeController.m */,
+				D252FFCE145F1D4300F93B14 /* CategoryViewController.h */,
+				D252FFCF145F1D4300F93B14 /* CategoryViewController.m */,
 				D27DC610144354CD0005163B /* OutlineViewController.h */,
 				D27DC611144354CD0005163B /* OutlineViewController.m */,
 			);
@@ -274,6 +280,7 @@
 				D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */,
 				D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */,
 				D27DC612144354CD0005163B /* OutlineViewController.m in Sources */,
+				D252FFD0145F1D4300F93B14 /* CategoryViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,8 +413,9 @@
 				D2359577140D6367007BCFFA /* TreeSort 4.xcdatamodel */,
 				D23FDFCC141135BE0060B327 /* TreeSort 5.xcdatamodel */,
 				D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */,
+				D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */,
 			);
-			currentVersion = D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */;
+			currentVersion = D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */;
 			path = TreeSort.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
