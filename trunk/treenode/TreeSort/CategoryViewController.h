@@ -10,10 +10,12 @@
 
 @class ESCategoryView;
 
-@interface CategoryViewController : NSObject
+@interface CategoryViewController : NSObject <NSTableViewDelegate>
 {
     NSManagedObjectContext *context;
     NSArrayController *categoryController;
+    
+    NSString *categoriesPBoardType;
 }
 
 @property (assign) IBOutlet ESCategoryView *categoryView;
