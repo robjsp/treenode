@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class ESTreeController;
+@class JOArrayController;
 @class ESOutlineView;
 @class OutlineViewController;
 
@@ -25,7 +26,7 @@
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet ESOutlineView *testOutlineView;
 @property (assign) IBOutlet OutlineViewController *outlineViewController;
-@property (assign) IBOutlet NSArrayController *categoryController;
+@property (assign) IBOutlet JOArrayController *categoryController;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
@@ -33,6 +34,7 @@
 
 - (IBAction)saveAction:sender;
 
+- (IBAction)newCategory:(id)sender;
 - (void)objectsChangedInContext:(NSNotification *)note;
 
 @end
