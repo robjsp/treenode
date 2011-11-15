@@ -262,12 +262,28 @@
     return NSTerminateNow;
 }
 
+
 - (void)dealloc
 {
     [__managedObjectContext release];
     [__persistentStoreCoordinator release];
     [__managedObjectModel release];
     [super dealloc];
+}
+
+
+#pragma mark -
+#pragma mark Create New Managed Objects
+
+- (IBAction)newCategory:(id)sender;
+{
+    ESCategory *category = [NSEntityDescription insertNewObjectForEntityForName:@"Category" inManagedObjectContext:[self managedObjectContext]];
+    
+    static NSUInteger count = 0;
+    category.displayName = [NSString stringWithFormat:@"Category %i",++count];
+    NSLog(@"newCategory with name = %@", category.displayName);
+    
+    [categoryController insertObject:category atArrangedObjectIndex:[[categoryController arrangedObjects] count]];	
 }
 
 
