@@ -15,12 +15,15 @@
 {
     NSManagedObjectContext *context;
     JOArrayController *categoryController;
+    NSSortDescriptor *tableSorter;
     
     NSString *categoriesPBoardType;
 }
 
 - (IBAction)copy:(id)sender;
 - (IBAction)paste:(id)sender;
+- (IBAction)cut:(id)sender;
+- (IBAction)delete:(id)sender;
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
 - (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;

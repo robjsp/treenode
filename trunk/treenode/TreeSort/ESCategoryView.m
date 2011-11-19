@@ -34,6 +34,18 @@
     categoriesPBoardType = @"categoriesPBoardType";
     
     context = [[NSApp delegate] managedObjectContext];
+    
+    // Set up a sort order for the entity that depends on the displayOrder attribute
+	tableSorter = [[NSSortDescriptor alloc] initWithKey:@"sortIndex"
+                                              ascending:YES
+                                               selector:@selector(compare:)];
+	
+    NSArray *sortDescriptors = [NSArray arrayWithObject:tableSorter];
+	[categoryController setSortDescriptors:sortDescriptors];
+    
+    // Set the delegate and dataSource
+    [self setDataSource:(id < NSTableViewDataSource >)self];
+    [self setDelegate:(id < NSTableViewDelegate >)self];
 }
 
 
@@ -88,6 +100,26 @@
 }
 
 
+- (IBAction)cut:(id)sender;
+{
+    NSLog(@"Cut called");
+    
+    if([[categoryController selectedObjects] count] > 0 ) {
+        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+        [self writeToPasteboard:pasteBoard];
+    }
+    
+    [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]];
+}
+
+
+- (IBAction)delete:(id)sender;
+{
+    NSLog(@"Delete called");
+    [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]]; 
+}
+
+
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard
 {
     /*  The elected managed objects are found. The properties of each node are then
@@ -130,7 +162,6 @@
 
             NSMutableDictionary *indexForURI = [NSMutableDictionary dictionary];
             NSUInteger i;
-//            
             NSMutableArray *newObjects = [NSMutableArray array];
             
             // Setup lookup dictionary to find related managedObjects, need to do this first so that we can find the base nodes
@@ -151,16 +182,9 @@
                     [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                 
-//                /*  Since TreeNode objects are root objects, and the copied base node objects have no parent, their position can be set first.
-//                 */
-//                if ([entityName isEqualToString:@"TreeNode"]) {
-//                    NSURL *copiedParent = [[[copiedDict valueForKey:@"relationships"] valueForKey:@"parent"] firstObject];
-//                    if(![indexForURI objectForKey:copiedParent]) {
-                [categoryController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];	
+                [categoryController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];
                 insertionIndex++;
-//                    }
-//                }
-                
+
                 [newObjects addObject:newManagedObject];
             }
             
@@ -188,107 +212,11 @@
                     }                   
                 }
             }
-            
-//            // The model is not synched with the view so update it to restore expansion states.
-//            [self restoreExpansionStates];  
             return YES;
         }
     }    
     return NO;
 }
-
-
-//- (void)pasteTableObjects
-//{	
-//	// The generalPasteboard is used for copy and paste operations
-//    NSPasteboard *generalPasteboard = [NSPasteboard generalPasteboard];
-//	// This works fine unlike in the outlineview protocol methods the managed object is returned here
-//	id	selectedManagedObject = [[collectionTreeController selection] valueForKey:@"self"];
-//    
-//	// Check to see if more than one category is selected or nothing is selected or 'parent' is not key-value compliant
-//	if(	selectedManagedObject == NSMultipleValuesMarker || selectedManagedObject == NSNoSelectionMarker || selectedManagedObject == NSNotApplicableMarker)
-//		selectedManagedObject = nil;
-//    
-//	NSArray *pasteBoardTypes = [NSArray arrayWithObject:[tableProperties valueForKey:@"tablePasteBoardType"]];	
-//	NSString *type = [generalPasteboard availableTypeFromArray:pasteBoardTypes];
-//    
-//	// Is the check for kind of pasteboard type necessary?
-//	if (type) {
-//		NSData  *data = [generalPasteboard dataForType:[tableProperties valueForKey:@"tablePasteBoardType"]];
-//		
-//		if (data) {
-//			// Insert the pasted objects at an index one more that the current selected
-//			// row. Multiply rows by INTERVAL to provide some gaps in the data			
-//			unsigned int displayOrder = ([tableArrayController selectionIndex] * INTERVAL) + 1;
-//            
-//			NSArray *newManagedObjects = [self newTableObjectsFromData:data
-//                                                       ofManagedObject:selectedManagedObject
-//                                                      withDisplayOrder:displayOrder];
-//            
-//			NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
-//			[context processPendingChanges];
-//			
-//			[self resortManagedObjectArray:[tableArrayController arrangedObjects] withKey:@"displayOrder"];
-//			
-//			[tableArrayController setSelectedObjects:newManagedObjects];		
-//			
-//			if ([newManagedObjects count]>1) {
-//				[[context undoManager] setActionName:[tableProperties valueForKey:@"pasteTableRowsMsg"]];	
-//			} else {
-//				[[context undoManager] setActionName:[tableProperties valueForKey:@"pasteTableRowMsg"]];					
-//			}			
-//			return;
-//		} 
-//	}
-//	// if we get here, then we couldn't paste 	
-//	NSBeep();
-//}
-
-//- (void)cutTableObjects
-//{
-//	[self copyTableObjects];
-//	[self deleteTableObjectsWithAction:NO];
-//}
-
-//- (void)copy
-//{	
-//    if([[treeController selectedNodes] count] > 0 ) {
-//        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-//        [self writeToPasteboard:pasteBoard];
-//    }
-//}
-//
-//- (void)paste
-//{
-//    NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-//    if(![self createObjectsFromPasteboard:pasteBoard])
-//        NSLog(@"Paste unsuccessful. No treeNode property dictionary type found on pasteboard");
-//}
-//
-//- (void)cut
-//{
-//    [self cutItems];
-//}
-//
-//- (void)delete
-//{
-//    [self deleteItems];
-//}
-//
-//- (void)cutItems
-//{   
-//    if([[treeController selectedNodes] count] > 0 ) {
-//        NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-//        [self writeToPasteboard:pasteBoard];
-//        
-//        [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
-//    }
-//}
-//
-//- (void)deleteItems
-//{
-//    [treeController removeObjectsAtArrangedObjectIndexPaths:[treeController selectionIndexPaths]];            
-//}
 
 
 #pragma mark -
@@ -304,6 +232,7 @@
 {	
     // Called when item dragging begins
     // Copy the row numbers to the pasteboard.
+    NSLog(@"Drag Initiated");
     NSData *tableViewRowIndexes = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes];
     [pasteBoard declareTypes:[NSArray arrayWithObject:categoriesPBoardType] owner:self];
     [pasteBoard setData:tableViewRowIndexes forType:categoriesPBoardType];
@@ -316,6 +245,8 @@
                  proposedRow:(int)row
        proposedDropOperation:(NSTableViewDropOperation)dropOperation
 {
+    NSLog(@"Validating Drag");
+    
     NSDragOperation result = NSDragOperationNone;
     
     // Check to see if the drop is on an item. Don't allow this, only allow inbetween row drops
@@ -374,61 +305,64 @@
               row:(int)row
     dropOperation:(NSTableViewDropOperation)dropOperation
 {
-    NSPasteboard  *pboard = [info draggingPasteboard];
-	
-	if ([info draggingSourceOperationMask] == 0 ) //i.e. the dragging source does not permit drags
-		return NO;
     
-	NSString  *type = [pboard availableTypeFromArray:[NSArray arrayWithObject:categoriesPBoardType]];
-	
-	// Does pasteboard type exist AND is it of type 'categoriesPBoardType'?
-	if (type && [type isEqualToString:categoriesPBoardType]) {
-		
-        NSData *rowData = [pboard dataForType:categoriesPBoardType];
-        NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:rowData];
-        NSInteger dragRow = [rowIndexes firstIndex];
-        
-        // If draggingSource is the outlineView and the drag is a move (not a copy because modifier key not held down)
-        // This works because only matching bits will become 1 with the bitwise '&' operator
-        if ([info draggingSource] == aTableView && ([info draggingSourceOperationMask] & NSDragOperationMove)) {
-            // A cut then paste operation. Can't be bothered to do a move here.
-            // If deleting is set to cascade all children will automatically be deleted too
-            //				[self removeManagedObjectUsingDataURIs:data];
-            //				newManagedObjects = [self newTableObjectsFromData:data ofManagedObject:parentMO withDisplayOrder:newDisplayOrder];
-        }
-        else {
-            // The modifier key was held down so do a copy				
-            //				newManagedObjects = [self newTableObjectsFromData:data ofManagedObject:parentMO withDisplayOrder:newDisplayOrder];
-        }
-        
-        // if the app is in the background, then force the context to process changes so the view updates
-        // (otherwise, may wait until the app is brought forward)
-        //			[[[NSApp delegate] managedObjectContext] processPendingChanges];
-        
-        // if the app is in the background, then force the context to process changes so the view updates
-        // (otherwise, may wait until the app is brought forward)
-        //			[self resortManagedObjectArray:[tableArrayController arrangedObjects] withKey:@"displayOrder"];			
-        //			
-        //			NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
-        //			
-        //			if (newManagedObjects) {
-        //				[tableArrayController setSelectedObjects:newManagedObjects];								
-        //				if ([newManagedObjects count] > 1) {
-        //					[[context undoManager] setActionName:[tableProperties valueForKey:@"moveTableRowsMsg"]];	
-        //				} else {
-        //					[[context undoManager] setActionName:[tableProperties valueForKey:@"moveTableRowMsg"]];					
-        //				}
-        //			}
-        
-        return YES;			
-	}
-	
-	return NO;
+    return YES;
+//    NSPasteboard  *pboard = [info draggingPasteboard];
+//	
+//	if ([info draggingSourceOperationMask] == 0 ) //i.e. the dragging source does not permit drags
+//		return NO;
+//    
+//	NSString  *type = [pboard availableTypeFromArray:[NSArray arrayWithObject:categoriesPBoardType]];
+//	
+//	// Does pasteboard type exist AND is it of type 'categoriesPBoardType'?
+//	if (type && [type isEqualToString:categoriesPBoardType]) {
+//		
+//        NSData *rowData = [pboard dataForType:categoriesPBoardType];
+//        NSIndexSet *rowIndexes = [NSKeyedUnarchiver unarchiveObjectWithData:rowData];
+//        NSInteger dragRow = [rowIndexes firstIndex];
+//        
+//        // If draggingSource is the outlineView and the drag is a move (not a copy because modifier key not held down)
+//        // This works because only matching bits will become 1 with the bitwise '&' operator
+//        if ([info draggingSource] == aTableView && ([info draggingSourceOperationMask] & NSDragOperationMove)) {
+//            // A cut then paste operation. Can't be bothered to do a move here.
+//            // If deleting is set to cascade all children will automatically be deleted too
+//            //				[self removeManagedObjectUsingDataURIs:data];
+//            //				newManagedObjects = [self newTableObjectsFromData:data ofManagedObject:parentMO withDisplayOrder:newDisplayOrder];
+//        }
+//        else {
+//            // The modifier key was held down so do a copy				
+//            //				newManagedObjects = [self newTableObjectsFromData:data ofManagedObject:parentMO withDisplayOrder:newDisplayOrder];
+//        }
+//        
+//        // if the app is in the background, then force the context to process changes so the view updates
+//        // (otherwise, may wait until the app is brought forward)
+//        //			[[[NSApp delegate] managedObjectContext] processPendingChanges];
+//        
+//        // if the app is in the background, then force the context to process changes so the view updates
+//        // (otherwise, may wait until the app is brought forward)
+//        //			[self resortManagedObjectArray:[tableArrayController arrangedObjects] withKey:@"displayOrder"];			
+//        //			
+//        //			NSManagedObjectContext *context = [[NSApp delegate] managedObjectContext];
+//        //			
+//        //			if (newManagedObjects) {
+//        //				[tableArrayController setSelectedObjects:newManagedObjects];								
+//        //				if ([newManagedObjects count] > 1) {
+//        //					[[context undoManager] setActionName:[tableProperties valueForKey:@"moveTableRowsMsg"]];	
+//        //				} else {
+//        //					[[context undoManager] setActionName:[tableProperties valueForKey:@"moveTableRowMsg"]];					
+//        //				}
+//        //			}
+//        
+//        return YES;			
+//	}
+//	
+//	return NO;
 }
 
 
 - (void)dealloc
 {
+    [tableSorter release];
     [super dealloc];
 }
 

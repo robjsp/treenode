@@ -24,6 +24,7 @@
     
     allObjects = [self arrangedObjects];
     
+    // Turn off 'Auto Rearrange Content' in interface builder to make this work
     for(i = 0; i < [allObjects count]; i++) {
         [[allObjects objectAtIndex:i] setValue:[NSNumber numberWithUnsignedInteger:i] forKey:@"sortIndex"];
     }
@@ -46,10 +47,8 @@
 
 - (void)insertObject:(id)object atArrangedObjectIndex:(NSUInteger)index;
 {
-    NSLog(@"insertObject called");
-
     [super insertObject:object atArrangedObjectIndex:index];
-	[self updateSortOrderOfModelObjects];
+    [self updateSortOrderOfModelObjects];
 }
 
 
@@ -63,7 +62,7 @@
 - (void)removeObjectAtArrangedObjectIndex:(NSUInteger)index;
 {
     [super removeObjectAtArrangedObjectIndex:index];
-	[self updateSortOrderOfModelObjects];
+    [self updateSortOrderOfModelObjects];
 }
 
 
