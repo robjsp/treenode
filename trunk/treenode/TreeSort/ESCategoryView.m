@@ -32,6 +32,8 @@
         
     //Set the custom data types for drag and drop and copy and paste
     categoriesPBoardType = @"categoriesPBoardType";
+	[self registerForDraggedTypes: [NSArray arrayWithObject:categoriesPBoardType]];
+
     
     context = [[NSApp delegate] managedObjectContext];
     
@@ -44,8 +46,8 @@
 	[categoryController setSortDescriptors:sortDescriptors];
     
     // Set the delegate and dataSource
-    [self setDataSource:(id < NSTableViewDataSource >)self];
-    [self setDelegate:(id < NSTableViewDelegate >)self];
+//    [self setDataSource:(id < NSTableViewDataSource >)self];
+//    [self setDelegate:(id < NSTableViewDelegate >)self];
 }
 
 
