@@ -21,6 +21,8 @@
     NSManagedObjectContext *__managedObjectContext;
     
     ESTreeController *treeController;
+    
+    NSString *categoriesPBoardType;
 }
 
 @property (assign) IBOutlet NSWindow *window;

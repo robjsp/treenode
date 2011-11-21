@@ -26,6 +26,13 @@
                                                  name:NSManagedObjectContextObjectsDidChangeNotification
                                                object:[self managedObjectContext]];
 }
+
+- (void)awakeFromNib;
+{
+    //Set the custom data types for drag and drop and copy and paste
+    categoriesPBoardType = @"categoriesPBoardType";
+}
+
 /**
     Returns the directory the application uses to store the Core Data store file. This code uses a directory named "TreeSort" in the user's Library directory.
  */
@@ -284,6 +291,51 @@
     NSLog(@"newCategory with name = %@", category.displayName);
     
     [categoryController insertObject:category atArrangedObjectIndex:[[categoryController arrangedObjects] count]];	
+}
+
+
+#pragma mark -
+#pragma mark NSTableView Drag and Drop Delegate Methods
+
+/*  This method is invoked by an tableView after determination that drag
+    should begin but before the drag has started. Remember to call registerForDraggedTypes
+    in the tableView to set up dragging.
+ */
+
+- (BOOL)tableView:(NSTableView *)categoryTable writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pasteBoard
+{
+    NSLog(@"Copying to drag and drop clipboard");
+    NSData *tableViewRowIndexes = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes];
+    [pasteBoard declareTypes:[NSArray arrayWithObject:categoriesPBoardType] owner:self];
+    [pasteBoard setData:tableViewRowIndexes forType:categoriesPBoardType];
+	return YES;
+}
+
+
+- (NSDragOperation)tableView:(NSTableView *)view
+                validateDrop:(id <NSDraggingInfo>)info
+                 proposedRow:(int)row
+       proposedDropOperation:(NSTableViewDropOperation)dropOperation
+{
+    NSLog(@"Validating Drop");    
+    
+    NSDragOperation result = NSDragOperationNone;
+    
+    if (dropOperation == NSTableViewDropAbove) {
+        result = NSDragOperationMove;
+    }
+    
+    return result;
+}
+
+
+- (BOOL)tableView:(NSTableView*)aTableView
+       acceptDrop:(id <NSDraggingInfo>)info
+              row:(int)row
+    dropOperation:(NSTableViewDropOperation)dropOperation
+{
+    NSLog(@"Accepting Drop");
+    return YES;
 }
 
 
