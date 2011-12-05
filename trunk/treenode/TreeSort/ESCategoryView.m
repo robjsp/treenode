@@ -33,6 +33,7 @@
     //Set the custom data types for drag and drop and copy and paste
     categoriesPBoardType = @"categoriesPBoardType";
 	[self registerForDraggedTypes: [NSArray arrayWithObject:categoriesPBoardType]];
+    [self setDraggingSourceOperationMask:(NSDragOperationMove | NSDragOperationCopy) forLocal:YES];
 
     
     context = [[NSApp delegate] managedObjectContext];
@@ -94,8 +95,9 @@
     
     // The generalPasteboard is used for copy and paste operations
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
+    NSUInteger insertionIndex = [categoryController indexForInsertion];
     
-    if(![self createObjectsFromPasteboard:pasteBoard]) {
+    if(![self createObjectsFromPasteboard:pasteBoard atInsertionIndex:insertionIndex]) {
         NSLog(@"Paste unsuccessful. No treeNode property dictionary type found on pasteboard");
         NSBeep();
     }
@@ -144,7 +146,7 @@
 }
 
 
-- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard atInsertionIndex:(NSUInteger) insertionIndex;
 {   
     NSArray *types = [pasteBoard types];
     if([types containsObject:categoriesPBoardType]) {
@@ -159,8 +161,6 @@
         if(data) {
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
             NSLog(@"Pasted properties are %@", copiedProperties);
-
-            NSUInteger insertionIndex = [categoryController indexForInsertion];
 
             NSMutableDictionary *indexForURI = [NSMutableDictionary dictionary];
             NSUInteger i;

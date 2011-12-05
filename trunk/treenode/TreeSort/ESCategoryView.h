@@ -26,6 +26,6 @@
 - (IBAction)delete:(id)sender;
 
 - (void)writeToPasteboard:(NSPasteboard *)pasteBoard;
-- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard;
+- (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard atInsertionIndex:(NSUInteger) insertionIndex;
 
 @end

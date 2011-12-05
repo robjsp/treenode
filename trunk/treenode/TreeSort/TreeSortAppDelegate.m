@@ -10,6 +10,7 @@
 #import "ESTreeNode.h"
 #import "ESCategory.h"
 #import "OutlineViewController.h"
+#import "ESCategoryView.h"
 
 @implementation TreeSortAppDelegate
 
@@ -17,6 +18,7 @@
 @synthesize testOutlineView;
 @synthesize outlineViewController;
 @synthesize categoryController;
+@synthesize categoriesView;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -304,10 +306,7 @@
 
 - (BOOL)tableView:(NSTableView *)categoryTable writeRowsWithIndexes:(NSIndexSet *)rowIndexes toPasteboard:(NSPasteboard *)pasteBoard
 {
-    NSLog(@"Copying to drag and drop clipboard");
-    NSData *tableViewRowIndexes = [NSKeyedArchiver archivedDataWithRootObject:rowIndexes];
-    [pasteBoard declareTypes:[NSArray arrayWithObject:categoriesPBoardType] owner:self];
-    [pasteBoard setData:tableViewRowIndexes forType:categoriesPBoardType];
+    [categoriesView writeToPasteboard:pasteBoard];
 	return YES;
 }
 
@@ -316,15 +315,17 @@
                 validateDrop:(id <NSDraggingInfo>)info
                  proposedRow:(int)row
        proposedDropOperation:(NSTableViewDropOperation)dropOperation
-{
-    NSLog(@"Validating Drop");    
-    
+{    
     NSDragOperation result = NSDragOperationNone;
     
-    if (dropOperation == NSTableViewDropAbove) {
-        result = NSDragOperationMove;
+    if (dropOperation == NSTableViewDropAbove) {       
+        // copy if it's not from our view or if the option/alt key is being held down, otherwise move
+        if ([[NSApp currentEvent] modifierFlags] & NSAlternateKeyMask)
+            result = NSDragOperationCopy;
+        else
+            result = NSDragOperationMove;
     }
-    
+    // Remember to set setDraggingSourceOperationMask: in awakeFromNib to set a dragging source destination mask
     return result;
 }
 
@@ -333,8 +334,24 @@
        acceptDrop:(id <NSDraggingInfo>)info
               row:(int)row
     dropOperation:(NSTableViewDropOperation)dropOperation
-{
-    NSLog(@"Accepting Drop");
+{    
+    if ([info draggingSourceOperationMask] == 0 ) //i.e. the dragging source does not permit drags
+		return NO;
+    
+    NSPasteboard  *pasteBoard = [info draggingPasteboard];
+        
+    // If the drag is a move (not a copy because modifier key not held down)
+    // This works because only matching bits will become 1 with the bitwise '&' operator
+    if ([info draggingSourceOperationMask] & NSDragOperationMove) {
+        // A delete then paste operation. Can't be bothered to do a move here.
+        [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]];
+        [categoriesView createObjectsFromPasteboard:pasteBoard atInsertionIndex:(NSUInteger) row];
+    }
+    else {
+        // The modifier key was held down so do a copy
+        [categoriesView createObjectsFromPasteboard:pasteBoard atInsertionIndex:(NSUInteger) row];
+    }
+    
     return YES;
 }
 

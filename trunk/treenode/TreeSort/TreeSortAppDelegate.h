@@ -12,6 +12,7 @@
 @class JOArrayController;
 @class ESOutlineView;
 @class OutlineViewController;
+@class ESCategoryView;
 
 @interface TreeSortAppDelegate : NSObject <NSApplicationDelegate>
 {
@@ -29,6 +30,7 @@
 @property (assign) IBOutlet ESOutlineView *testOutlineView;
 @property (assign) IBOutlet OutlineViewController *outlineViewController;
 @property (assign) IBOutlet JOArrayController *categoryController;
+@property (assign) IBOutlet ESCategoryView *categoriesView;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
