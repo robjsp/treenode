@@ -27,6 +27,9 @@
 		D27DC612144354CD0005163B /* OutlineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D27DC611144354CD0005163B /* OutlineViewController.m */; };
 		D28C9D5F1471756200652375 /* JOArrayController.m in Sources */ = {isa = PBXBuildFile; fileRef = D28C9D5E1471756200652375 /* JOArrayController.m */; };
 		D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D28C9D6114718EB800652375 /* NSArrayController_Extensions.m */; };
+		D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */; };
+		D2B7CE211495205800CD49F2 /* ESComment.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE201495205800CD49F2 /* ESComment.m */; };
+		D2B7CE231495221400CD49F2 /* v7_to_v8.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +79,12 @@
 		D28C9D6014718EB800652375 /* NSArrayController_Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSArrayController_Extensions.h; sourceTree = "<group>"; };
 		D28C9D6114718EB800652375 /* NSArrayController_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayController_Extensions.m; sourceTree = "<group>"; };
 		D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 7.xcdatamodel"; sourceTree = "<group>"; };
+		D2B7CE1A1495197700CD49F2 /* TreeSort 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 8.xcdatamodel"; sourceTree = "<group>"; };
+		D2B7CE1C14951C7A00CD49F2 /* JOCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JOCommentView.h; path = ../../../JOCommentView.h; sourceTree = "<group>"; };
+		D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JOCommentView.m; path = ../../../JOCommentView.m; sourceTree = "<group>"; };
+		D2B7CE1F1495205800CD49F2 /* ESComment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESComment.h; sourceTree = "<group>"; };
+		D2B7CE201495205800CD49F2 /* ESComment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESComment.m; sourceTree = "<group>"; };
+		D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = v7_to_v8.xcmappingmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +106,8 @@
 				D25C4955139AE60D0000BCA9 /* ESOutlineView.m */,
 				D23FDFD31411389E0060B327 /* ESCategoryView.h */,
 				D23FDFD41411389E0060B327 /* ESCategoryView.m */,
+				D2B7CE1C14951C7A00CD49F2 /* JOCommentView.h */,
+				D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -168,10 +179,13 @@
 			isa = PBXGroup;
 			children = (
 				D27C05F6139A928A009D07BE /* TreeSort.xcdatamodeld */,
+				D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */,
 				D27C0606139A92CF009D07BE /* ESTreeNode.h */,
 				D27C0607139A92CF009D07BE /* ESTreeNode.m */,
 				D23FDFCD1411360B0060B327 /* ESCategory.h */,
 				D23FDFCE1411360B0060B327 /* ESCategory.m */,
+				D2B7CE1F1495205800CD49F2 /* ESComment.h */,
+				D2B7CE201495205800CD49F2 /* ESComment.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -287,6 +301,9 @@
 				D27DC612144354CD0005163B /* OutlineViewController.m in Sources */,
 				D28C9D5F1471756200652375 /* JOArrayController.m in Sources */,
 				D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */,
+				D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */,
+				D2B7CE211495205800CD49F2 /* ESComment.m in Sources */,
+				D2B7CE231495221400CD49F2 /* v7_to_v8.xcmappingmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +430,7 @@
 		D27C05F6139A928A009D07BE /* TreeSort.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				D2B7CE1A1495197700CD49F2 /* TreeSort 8.xcdatamodel */,
 				D2359572140D4D83007BCFFA /* TreeSort 3.xcdatamodel */,
 				D235956E140D4072007BCFFA /* TreeSort 2.xcdatamodel */,
 				D27C05F7139A928A009D07BE /* TreeSort.xcdatamodel */,
@@ -421,7 +439,7 @@
 				D23FDFD614113D190060B327 /* TreeSort 6.xcdatamodel */,
 				D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */,
 			);
-			currentVersion = D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */;
+			currentVersion = D2B7CE1A1495197700CD49F2 /* TreeSort 8.xcdatamodel */;
 			path = TreeSort.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
