@@ -9,6 +9,7 @@
 #import "TreeSortAppDelegate.h"
 #import "ESTreeNode.h"
 #import "ESCategory.h"
+#import "ESComment.h"
 #import "OutlineViewController.h"
 
 @implementation TreeSortAppDelegate
@@ -17,6 +18,7 @@
 @synthesize testOutlineView;
 @synthesize outlineViewController;
 @synthesize categoryController;
+@synthesize commentController;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
@@ -291,6 +293,18 @@
     NSLog(@"newCategory with name = %@", category.displayName);
     
     [categoryController insertObject:category atArrangedObjectIndex:[[categoryController arrangedObjects] count]];	
+}
+
+
+- (IBAction)newComment:(id)sender;
+{
+    ESComment *comment = [NSEntityDescription insertNewObjectForEntityForName:@"Comment" inManagedObjectContext:[self managedObjectContext]];
+    
+    static NSUInteger count = 0;
+    comment.displayName = [NSString stringWithFormat:@"Comment %i",++count];
+    NSLog(@"newComment with name = %@", comment.displayName);
+    
+    [commentController insertObject:comment atArrangedObjectIndex:[[commentController arrangedObjects] count]];
 }
 
 

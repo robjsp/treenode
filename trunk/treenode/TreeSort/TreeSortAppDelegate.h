@@ -23,12 +23,14 @@
     ESTreeController *treeController;
     
     NSString *categoriesPBoardType;
+    JOArrayController *commentController;
 }
 
 @property (assign) IBOutlet NSWindow *window;
 @property (assign) IBOutlet ESOutlineView *testOutlineView;
 @property (assign) IBOutlet OutlineViewController *outlineViewController;
 @property (assign) IBOutlet JOArrayController *categoryController;
+@property (assign) IBOutlet JOArrayController *commentController;
 
 @property (nonatomic, retain, readonly) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (nonatomic, retain, readonly) NSManagedObjectModel *managedObjectModel;
@@ -37,6 +39,7 @@
 - (IBAction)saveAction:sender;
 
 - (IBAction)newCategory:(id)sender;
+- (IBAction)newComment:(id)sender;
 - (void)objectsChangedInContext:(NSNotification *)note;
 
 @end
