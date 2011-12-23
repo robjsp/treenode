@@ -132,6 +132,7 @@
 	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
     [pasteBoard declareTypes:[NSArray arrayWithObjects:categoriesPBoardType, nil] owner:self]; 
     [pasteBoard setData:copyData forType:categoriesPBoardType];
+    NSLog(@"Selected Object Properties are: %@", selectedObjectProps);
 }
 
 
