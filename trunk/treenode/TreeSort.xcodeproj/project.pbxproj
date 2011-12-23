@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D2126477149677A900BC0C94 /* v7_to_v8.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = D2126476149677A900BC0C94 /* v7_to_v8.xcmappingmodel */; };
 		D23FDFCA14112F700060B327 /* NSManagedObject_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFC914112F700060B327 /* NSManagedObject_Extensions.m */; };
 		D23FDFCF1411360B0060B327 /* ESCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFCE1411360B0060B327 /* ESCategory.m */; };
 		D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFD41411389E0060B327 /* ESCategoryView.m */; };
@@ -29,10 +30,10 @@
 		D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D28C9D6114718EB800652375 /* NSArrayController_Extensions.m */; };
 		D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */; };
 		D2B7CE211495205800CD49F2 /* ESComment.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE201495205800CD49F2 /* ESComment.m */; };
-		D2B7CE231495221400CD49F2 /* v7_to_v8.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D2126476149677A900BC0C94 /* v7_to_v8.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = v7_to_v8.xcmappingmodel; sourceTree = "<group>"; };
 		D235956E140D4072007BCFFA /* TreeSort 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 2.xcdatamodel"; sourceTree = "<group>"; };
 		D2359572140D4D83007BCFFA /* TreeSort 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 3.xcdatamodel"; sourceTree = "<group>"; };
 		D2359577140D6367007BCFFA /* TreeSort 4.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 4.xcdatamodel"; sourceTree = "<group>"; };
@@ -84,7 +85,6 @@
 		D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JOCommentView.m; path = ../../../JOCommentView.m; sourceTree = "<group>"; };
 		D2B7CE1F1495205800CD49F2 /* ESComment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESComment.h; sourceTree = "<group>"; };
 		D2B7CE201495205800CD49F2 /* ESComment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESComment.m; sourceTree = "<group>"; };
-		D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = v7_to_v8.xcmappingmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,13 +179,13 @@
 			isa = PBXGroup;
 			children = (
 				D27C05F6139A928A009D07BE /* TreeSort.xcdatamodeld */,
-				D2B7CE221495221300CD49F2 /* v7_to_v8.xcmappingmodel */,
 				D27C0606139A92CF009D07BE /* ESTreeNode.h */,
 				D27C0607139A92CF009D07BE /* ESTreeNode.m */,
 				D23FDFCD1411360B0060B327 /* ESCategory.h */,
 				D23FDFCE1411360B0060B327 /* ESCategory.m */,
 				D2B7CE1F1495205800CD49F2 /* ESComment.h */,
 				D2B7CE201495205800CD49F2 /* ESComment.m */,
+				D2126476149677A900BC0C94 /* v7_to_v8.xcmappingmodel */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -303,7 +303,7 @@
 				D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */,
 				D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */,
 				D2B7CE211495205800CD49F2 /* ESComment.m in Sources */,
-				D2B7CE231495221400CD49F2 /* v7_to_v8.xcmappingmodel in Sources */,
+				D2126477149677A900BC0C94 /* v7_to_v8.xcmappingmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
