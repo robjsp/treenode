@@ -13,6 +13,7 @@
 		D23FDFD51411389E0060B327 /* ESCategoryView.m in Sources */ = {isa = PBXBuildFile; fileRef = D23FDFD41411389E0060B327 /* ESCategoryView.m */; };
 		D25C4953139AE5E40000BCA9 /* ESTreeController.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4952139AE5E40000BCA9 /* ESTreeController.m */; };
 		D25C4956139AE60D0000BCA9 /* ESOutlineView.m in Sources */ = {isa = PBXBuildFile; fileRef = D25C4955139AE60D0000BCA9 /* ESOutlineView.m */; };
+		D277DE0014AF751D0086D462 /* JOCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D277DDFF14AF751D0086D462 /* JOCommentView.m */; };
 		D27C05DF139A928A009D07BE /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D27C05DE139A928A009D07BE /* Cocoa.framework */; };
 		D27C05E9139A928A009D07BE /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = D27C05E7139A928A009D07BE /* InfoPlist.strings */; };
 		D27C05EC139A928A009D07BE /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D27C05EB139A928A009D07BE /* main.m */; };
@@ -28,7 +29,6 @@
 		D27DC612144354CD0005163B /* OutlineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D27DC611144354CD0005163B /* OutlineViewController.m */; };
 		D28C9D5F1471756200652375 /* JOArrayController.m in Sources */ = {isa = PBXBuildFile; fileRef = D28C9D5E1471756200652375 /* JOArrayController.m */; };
 		D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = D28C9D6114718EB800652375 /* NSArrayController_Extensions.m */; };
-		D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */; };
 		D2B7CE211495205800CD49F2 /* ESComment.m in Sources */ = {isa = PBXBuildFile; fileRef = D2B7CE201495205800CD49F2 /* ESComment.m */; };
 /* End PBXBuildFile section */
 
@@ -49,6 +49,8 @@
 		D25C4952139AE5E40000BCA9 /* ESTreeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESTreeController.m; sourceTree = "<group>"; };
 		D25C4954139AE60D0000BCA9 /* ESOutlineView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESOutlineView.h; sourceTree = "<group>"; };
 		D25C4955139AE60D0000BCA9 /* ESOutlineView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESOutlineView.m; sourceTree = "<group>"; };
+		D277DDFE14AF751D0086D462 /* JOCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JOCommentView.h; sourceTree = "<group>"; };
+		D277DDFF14AF751D0086D462 /* JOCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JOCommentView.m; sourceTree = "<group>"; };
 		D27C05DA139A928A009D07BE /* TreeSort.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TreeSort.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D27C05DE139A928A009D07BE /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		D27C05E1139A928A009D07BE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -81,8 +83,6 @@
 		D28C9D6114718EB800652375 /* NSArrayController_Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayController_Extensions.m; sourceTree = "<group>"; };
 		D2A90C90145F0E3A002CA256 /* TreeSort 7.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 7.xcdatamodel"; sourceTree = "<group>"; };
 		D2B7CE1A1495197700CD49F2 /* TreeSort 8.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "TreeSort 8.xcdatamodel"; sourceTree = "<group>"; };
-		D2B7CE1C14951C7A00CD49F2 /* JOCommentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = JOCommentView.h; path = ../../../JOCommentView.h; sourceTree = "<group>"; };
-		D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = JOCommentView.m; path = ../../../JOCommentView.m; sourceTree = "<group>"; };
 		D2B7CE1F1495205800CD49F2 /* ESComment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ESComment.h; sourceTree = "<group>"; };
 		D2B7CE201495205800CD49F2 /* ESComment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ESComment.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -106,8 +106,8 @@
 				D25C4955139AE60D0000BCA9 /* ESOutlineView.m */,
 				D23FDFD31411389E0060B327 /* ESCategoryView.h */,
 				D23FDFD41411389E0060B327 /* ESCategoryView.m */,
-				D2B7CE1C14951C7A00CD49F2 /* JOCommentView.h */,
-				D2B7CE1D14951C7A00CD49F2 /* JOCommentView.m */,
+				D277DDFE14AF751D0086D462 /* JOCommentView.h */,
+				D277DDFF14AF751D0086D462 /* JOCommentView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -301,9 +301,9 @@
 				D27DC612144354CD0005163B /* OutlineViewController.m in Sources */,
 				D28C9D5F1471756200652375 /* JOArrayController.m in Sources */,
 				D28C9D6214718EB800652375 /* NSArrayController_Extensions.m in Sources */,
-				D2B7CE1E14951C7A00CD49F2 /* JOCommentView.m in Sources */,
 				D2B7CE211495205800CD49F2 /* ESComment.m in Sources */,
 				D2126477149677A900BC0C94 /* v7_to_v8.xcmappingmodel in Sources */,
+				D277DE0014AF751D0086D462 /* JOCommentView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
