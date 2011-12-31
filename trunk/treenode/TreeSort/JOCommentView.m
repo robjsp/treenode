@@ -1,17 +1,16 @@
 //
-//  ESTableView.m
+//  JOCommentView.m
 //  TreeSort
 //
-//  Created by Russell Newlands on 02/09/2011.
+//  Created by Newlands Russell on 31/12/2011.
 //  Copyright 2011 Jominy Research. All rights reserved.
 //
 
-#import "ESCategoryView.h"
-#import "TreeSortAppDelegate.h"
+#import "JOCommentView.h"
 #import "NSManagedObject_Extensions.h"
 #import "NSArrayController_Extensions.h"
 
-@implementation ESCategoryView
+@implementation JOCommentView
 
 - (id)init
 {
@@ -23,18 +22,18 @@
     return self;
 }
 
-
 - (void)awakeFromNib;
 {
     // Get the custom NSArrayController for the categoryView
 	NSDictionary *bindingInfo = [self infoForBinding:NSContentBinding]; 
-	categoryController = [bindingInfo valueForKey:NSObservedObjectKey];
+	commentController = [bindingInfo valueForKey:NSObservedObjectKey];
         
     //Set the custom data types for drag and drop and copy and paste
-    categoriesPBoardType = @"categoriesPBoardType";
-	[self registerForDraggedTypes: [NSArray arrayWithObject:categoriesPBoardType]];
+    commentPBoardType = @"commentPBoardType";
+	[self registerForDraggedTypes: [NSArray arrayWithObject:commentPBoardType]];
     [self setDraggingSourceOperationMask:(NSDragOperationMove | NSDragOperationCopy) forLocal:YES];
 
+    
     context = [[NSApp delegate] managedObjectContext];
     
     // Set up a sort order for the entity that depends on the displayOrder attribute
@@ -43,7 +42,7 @@
                                                selector:@selector(compare:)];
 	
     NSArray *sortDescriptors = [NSArray arrayWithObject:tableSorter];
-	[categoryController setSortDescriptors:sortDescriptors];
+	[commentController setSortDescriptors:sortDescriptors];
     
     // Set the delegate and dataSource
     [self setDataSource:(id < NSTableViewDataSource >)self];
@@ -61,7 +60,7 @@
 		switch([[theEvent characters] characterAtIndex:0])
 		{
 			case NSDeleteCharacter:
-                [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]]; 
+                [commentController removeObjectsAtArrangedObjectIndexes:[commentController selectionIndexes]]; 
 				break;
                 
 			default:
@@ -77,7 +76,7 @@
 
 - (IBAction)copy:(id)sender;
 {
-    if([[categoryController selectedObjects] count] > 0 ) {
+    if([[commentController selectedObjects] count] > 0 ) {
         NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
         [self writeToPasteboard:pasteBoard];
     }
@@ -88,10 +87,10 @@
 {
     // The generalPasteboard is used for copy and paste operations
     NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
-    NSUInteger insertionIndex = [categoryController indexForInsertion];
+    NSUInteger insertionIndex = [commentController indexForInsertion];
     
     if(![self createObjectsFromPasteboard:pasteBoard atInsertionIndex:insertionIndex]) {
-        NSLog(@"Paste unsuccessful. No category property dictionary type found on pasteboard");
+        NSLog(@"Paste unsuccessful. No comment property dictionary type found on pasteboard");
         NSBeep();
     }
 }
@@ -99,18 +98,18 @@
 
 - (IBAction)cut:(id)sender;
 {
-     if([[categoryController selectedObjects] count] > 0 ) {
+     if([[commentController selectedObjects] count] > 0 ) {
         NSPasteboard *pasteBoard = [NSPasteboard generalPasteboard];
         [self writeToPasteboard:pasteBoard];
     }
     
-    [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]];
+    [commentController removeObjectsAtArrangedObjectIndexes:[commentController selectionIndexes]];
 }
 
 
 - (IBAction)delete:(id)sender;
 {
-    [categoryController removeObjectsAtArrangedObjectIndexes:[categoryController selectionIndexes]]; 
+    [commentController removeObjectsAtArrangedObjectIndexes:[commentController selectionIndexes]]; 
 }
 
 
@@ -120,7 +119,7 @@
         read into a dictionary which is inserted into an array.
      */
     
-    NSArray *selectedObjects = [categoryController selectedObjects];
+    NSArray *selectedObjects = [commentController selectedObjects];
     NSMutableArray *selectedObjectProps = [NSMutableArray array]; // Array of selected object properties for archiving
     
     // Return a dictionary of all objects attributes, their name and their relationship data. These will be ordered.
@@ -129,16 +128,16 @@
     }
     
 	NSData *copyData = [NSKeyedArchiver archivedDataWithRootObject:selectedObjectProps];
-    [pasteBoard declareTypes:[NSArray arrayWithObjects:categoriesPBoardType, nil] owner:self]; 
-    [pasteBoard setData:copyData forType:categoriesPBoardType];
+    [pasteBoard declareTypes:[NSArray arrayWithObjects:commentPBoardType, nil] owner:self]; 
+    [pasteBoard setData:copyData forType:commentPBoardType];
 }
 
 
 - (BOOL)createObjectsFromPasteboard:(NSPasteboard *)pasteBoard atInsertionIndex:(NSUInteger) insertionIndex;
 {   
     NSArray *types = [pasteBoard types];
-    if([types containsObject:categoriesPBoardType]) {
-        NSData  *data = [pasteBoard dataForType:categoriesPBoardType];
+    if([types containsObject:commentPBoardType]) {
+        NSData  *data = [pasteBoard dataForType:commentPBoardType];
         
         /*  The data is archived up as a series of NSDictionaries when copy or drag occurs, so unarchive first
          The objects are created and the URI representation used to set their properties. The properties copied
@@ -148,19 +147,9 @@
         NSArray *copiedProperties;
         if(data) {
             copiedProperties = [NSKeyedUnarchiver unarchiveObjectWithData:data];
-
-            NSMutableDictionary *indexForURI = [NSMutableDictionary dictionary];
-            NSUInteger i;
             NSMutableArray *newObjects = [NSMutableArray array];
             
-            // Setup lookup dictionary to find related managedObjects, need to do this first so that we can find the base nodes
-            for (i = 0; i < [copiedProperties count]; ++i) {
-                NSDictionary *copiedDict = [copiedProperties objectAtIndex:i];
-                NSURL *selfURI = [copiedDict valueForKey:@"selfURI"];
-                [indexForURI setObject:[NSNumber numberWithUnsignedInteger:i] forKey:selfURI];
-            }
-            
-            // Now create new managed objects setting the attributes of each from the copied properties
+            // Create new managed objects setting the attributes of each from the copied properties
             for (NSDictionary *copiedDict in copiedProperties) {
                 NSString *entityName = [copiedDict valueForKey:@"entityName"];
                 NSManagedObject *newManagedObject = [NSEntityDescription insertNewObjectForEntityForName:entityName inManagedObjectContext:context];
@@ -171,40 +160,15 @@
                     [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                 
-				// Only insert Category objects, comments will automatically get linked
-                if ([entityName isEqualToString:@"Category"]) {
-	                [categoryController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];
+				// Only insert Comment objects
+                if ([entityName isEqualToString:@"Comment"]) {
+	                [commentController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];
 	                insertionIndex++;
                 }				
 
                 [newObjects addObject:newManagedObject];
-            }
-            
-            // Set the relationships of the new objects by using the lookup dictionary.
-            for (i = 0; i < [newObjects count]; ++i) {
-                NSDictionary *copiedRelationships = [[copiedProperties objectAtIndex:i] valueForKey:@"relationships"];
-				NSLog(@"copied relationships are %@", copiedRelationships);
-                NSManagedObject *newObject = [newObjects objectAtIndex:i];
-                NSString *entityName = [[newObject entity] name];
-                NSDictionary *relationships = [[NSEntityDescription entityForName:entityName inManagedObjectContext:context] relationshipsByName];
-                
-                for (NSString *relationshipName in [copiedRelationships allKeys]) {
-                    NSArray *relatedObjectURIs = [copiedRelationships valueForKey:relationshipName];
-                    NSRelationshipDescription *relDescription = [relationships objectForKey:relationshipName];  
-                    /*  No need to set to one relationships because the inverse is set automatically by when an object is added
-                     The copied base objects also have their parent (to - one) relationship set by insert.
-                     the newRelationshipSet points to the original retrieved set and this is what is updated on adding
-                     */
-                    if([relDescription isToMany]) {
-                        NSMutableSet *newRelationshipsSet = [newObject mutableSetValueForKey:relationshipName];
-                        for (NSURL *objectURI in relatedObjectURIs) {
-                            NSUInteger indexOfObject = [[indexForURI objectForKey:objectURI] unsignedIntegerValue];
-                            [newRelationshipsSet addObject:[newObjects objectAtIndex:indexOfObject]];
-                        }
-                    }                   
-                }
-            }
-            return YES;
+			}
+			return YES;
         }
     }    
     return NO;
@@ -259,9 +223,9 @@ in the tableView to set up dragging.
     // This works because only matching bits will become 1 with the bitwise '&' operator
     if ([info draggingSourceOperationMask] & NSDragOperationMove) {
         // A delete then paste operation. Can't be bothered to do a move here.
-        NSArray *selection = [categoryController selectedObjects];
+        NSArray *selection = [commentController selectedObjects];
         [self createObjectsFromPasteboard:pasteBoard atInsertionIndex:(NSUInteger) row];
-        [categoryController removeObjects:selection];
+        [commentController removeObjects:selection];
     }
     else {
         // The modifier key was held down so do a copy
