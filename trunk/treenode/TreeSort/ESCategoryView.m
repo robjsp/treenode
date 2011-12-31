@@ -173,8 +173,10 @@
                     [newManagedObject setValue:[attributes valueForKey:attributeName] forKey:attributeName];
                 }
                 
-                [categoryController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];
-                insertionIndex++;
+                if ([entityName isEqualToString:@"Category"]) {
+	                [categoryController insertObject:newManagedObject atArrangedObjectIndex:insertionIndex];
+	                insertionIndex++;
+                }				
 
                 [newObjects addObject:newManagedObject];
             }
