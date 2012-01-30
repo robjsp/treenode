@@ -17,8 +17,8 @@
 @implementation OutlineViewController
 
 @synthesize testOutlineView;
-@synthesize newLeaf;
-@synthesize newGroup;
+@synthesize theNewLeaf;
+@synthesize theNewGroup;
 
 #pragma mark -
 #pragma mark Initialisation stuff
@@ -66,7 +66,7 @@
 #pragma mark -
 #pragma mark Create New OutlineView Items
 
-- (IBAction)newLeaf:(id)sender;
+- (IBAction)theNewLeaf:(id)sender;
 {
 	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:context];
     
@@ -77,7 +77,7 @@
 }
 
 
-- (IBAction)newGroup:(id)sender;
+- (IBAction)theNewGroup:(id)sender;
 {
 	ESTreeNode *treeNode = [NSEntityDescription insertNewObjectForEntityForName:@"TreeNode" inManagedObjectContext:context];
     

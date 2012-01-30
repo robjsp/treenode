@@ -22,13 +22,13 @@
 }
 
 @property (assign) IBOutlet ESOutlineView *testOutlineView;
-@property (assign) IBOutlet NSButton *newLeaf;
-@property (assign) IBOutlet NSButton *newGroup;
+@property (assign) IBOutlet NSButton *theNewLeaf;
+@property (assign) IBOutlet NSButton *theNewGroup;
 
 - (NSArray *)treeNodeSortDescriptors; // This is a 'getter' method whose name is used in binding the sortDescriptors property of the treeController
 
-- (IBAction)newLeaf:(id)sender;
-- (IBAction)newGroup:(id)sender;
+- (IBAction)theNewLeaf:(id)sender;
+- (IBAction)theNewGroup:(id)sender;
 
 - (void)copy;
 - (void)paste;
