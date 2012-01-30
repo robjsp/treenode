@@ -248,6 +248,7 @@
 		D27C05D1139A928A009D07BE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = "Jominy Research";
 			};
 			buildConfigurationList = D27C05D4139A928A009D07BE /* Build configuration list for PBXProject "TreeSort" */;
